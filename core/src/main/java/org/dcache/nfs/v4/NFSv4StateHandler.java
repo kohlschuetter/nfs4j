@@ -49,6 +49,7 @@ import org.dcache.nfs.v4.xdr.nfs4_prot;
 import org.dcache.nfs.v4.xdr.sessionid4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.nfs.vfs.OpenCloseTracker;
 import org.dcache.oncrpc4j.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class NFSv4StateHandler {
      */
     private final int _instanceId;
 
-    private final FileTracker _openFileTracker = new FileTracker();
+    private final FileTracker _openFileTracker;
 
     private final ClientRecoveryStore clientStore;
 
@@ -110,30 +111,37 @@ public class NFSv4StateHandler {
     private final Clock _clock;
 
     public NFSv4StateHandler() {
-        this(Duration.ofSeconds(NFSv4Defaults.NFS4_LEASE_TIME), 0, new EphemeralClientRecoveryStore());
+        this(null);
+    }
+
+    public NFSv4StateHandler(OpenCloseTracker oct) {
+        this(oct, Duration.ofSeconds(NFSv4Defaults.NFS4_LEASE_TIME), 0, new EphemeralClientRecoveryStore());
     }
 
     /**
      * Create NFSv4 state handler with given lease time, instance id and client store. The {@code instanceId} should
      * uniquely identify this state handler.
      *
+     * @param oct An open-close tracker that can log and intervene on open/close operations, or {@code null}.
      * @param leaseTime time duration of a lease.
      * @param instanceId the nfs server instance id within deployment.
      * @param clientStore store used by state handler to keep track of valid clients.
      */
-    public NFSv4StateHandler(Duration leaseTime, int instanceId, ClientRecoveryStore clientStore) {
-        this(leaseTime, instanceId, clientStore, new DefaultClientCache(leaseTime, new DeadClientCollector(
+    public NFSv4StateHandler(OpenCloseTracker oct, Duration leaseTime, int instanceId,
+            ClientRecoveryStore clientStore) {
+        this(oct, leaseTime, instanceId, clientStore, new DefaultClientCache(leaseTime, new DeadClientCollector(
                 clientStore)));
     }
 
-    public NFSv4StateHandler(Duration leaseTime, int instanceId, ClientRecoveryStore clientStore,
+    public NFSv4StateHandler(OpenCloseTracker oct, Duration leaseTime, int instanceId, ClientRecoveryStore clientStore,
             ClientCache clientsByServerId) {
-        this(leaseTime, instanceId, clientStore, clientsByServerId, Clock.systemDefaultZone());
+        this(oct, leaseTime, instanceId, clientStore, clientsByServerId, Clock.systemDefaultZone());
     }
 
     @VisibleForTesting
-    NFSv4StateHandler(Duration leaseTime, int instanceId, ClientRecoveryStore clientStore,
+    NFSv4StateHandler(OpenCloseTracker oct, Duration leaseTime, int instanceId, ClientRecoveryStore clientStore,
             ClientCache clientsByServerId, Clock clock) {
+        _openFileTracker = oct == null ? new FileTracker() : new FileTracker(oct);
         _leaseTime = leaseTime;
         _clientsByServerId = clientsByServerId;
         _clock = clock;

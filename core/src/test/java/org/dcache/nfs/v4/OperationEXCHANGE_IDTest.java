@@ -43,13 +43,16 @@ import org.junit.Test;
 public class OperationEXCHANGE_IDTest {
 
     private NFSv4StateHandler stateHandler;
+    private OpenCloseTrackerTester openCloseTracker;
     private final String domain = "nairi.desy.de";
     private final String name = "dCache.ORG java based client";
     private String clientId;
 
     @Before
     public void setUp() {
-        stateHandler = new NFSv4StateHandler(Duration.ofSeconds(2), 0, new EphemeralClientRecoveryStore());
+        openCloseTracker = new OpenCloseTrackerTester();
+        stateHandler = new NFSv4StateHandler(openCloseTracker, Duration.ofSeconds(2), 0,
+                new EphemeralClientRecoveryStore());
         clientId = UUID.randomUUID().toString();
     }
 

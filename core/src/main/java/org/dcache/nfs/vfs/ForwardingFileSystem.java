@@ -228,4 +228,15 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     public CompletableFuture<Long> copyFileRange(Inode src, long srcPos, Inode dst, long dstPos, long len) {
         return delegate().copyFileRange(src, srcPos, dst, dstPos, len);
     }
+
+    @Override
+    public void open(OpenHandle openStateid, Inode inode, int accessMode, int denyMode, boolean alreadyOpen)
+            throws IOException {
+        delegate().open(openStateid, inode, accessMode, denyMode, alreadyOpen);
+    }
+
+    @Override
+    public void close(OpenHandle stateid, Inode inode, int remainingOpens) {
+        delegate().close(stateid, inode, remainingOpens);
+    }
 }
