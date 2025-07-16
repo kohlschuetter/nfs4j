@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,7 @@ import org.dcache.nfs.v4.xdr.state_owner4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +32,7 @@ public class OperationCOPYTest {
     private NFSv41Session session;
     private NFS4Client client;
     private VirtualFileSystem vfs;
+    private OpenCloseTrackerTester openCloseTracker;
 
     private Inode srcInode = Inode.forFile(new byte[] {1, 2, 3, 4});
     private Inode destInode = Inode.forFile(new byte[] {5, 6, 7, 8});
@@ -40,8 +43,9 @@ public class OperationCOPYTest {
     private stateid4 destStateid;
 
     @Before
-    public void setUp() throws UnknownHostException, ChimeraNFSException {
-        stateHandler = new NFSv4StateHandler();
+    public void setUp() throws UnknownHostException, ChimeraNFSException, IOException {
+        openCloseTracker = new OpenCloseTrackerTester();
+        stateHandler = new NFSv4StateHandler(openCloseTracker);
         client = createClient(stateHandler);
         session = client.createSession(1, 8196, 8192, 128, 16);
 
@@ -61,8 +65,15 @@ public class OperationCOPYTest {
                 .thenReturn(CompletableFuture.completedFuture(8192L));
     }
 
+    @After
+    public void tearDown() {
+        openCloseTracker.tearDown();
+    }
+
     @Test(expected = OffloadNoReqsException.class)
     public void testCopyRejectNonConsecutive() throws Exception {
+        openCloseTracker.expectUponTeardownNumOpenNew(2);
+        openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(0);
 
         COMPOUND4args copyArgs = new CompoundBuilder()
                 .withMinorversion(2)
@@ -83,6 +94,8 @@ public class OperationCOPYTest {
 
     @Test(expected = OffloadNoReqsException.class)
     public void testCopyRejectSyncLargeBlock() throws Exception {
+        openCloseTracker.expectUponTeardownNumOpenNew(2);
+        openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(0);
 
         COMPOUND4args copyArgs = new CompoundBuilder()
                 .withMinorversion(2)
@@ -104,6 +117,8 @@ public class OperationCOPYTest {
 
     @Test
     public void testCopyAcceptSyncSmallBlock() throws Exception {
+        openCloseTracker.expectUponTeardownNumOpenNew(2);
+        openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(0);
 
         COMPOUND4args copyArgs = new CompoundBuilder()
                 .withMinorversion(2)
@@ -125,6 +140,8 @@ public class OperationCOPYTest {
 
     @Test
     public void testCopyAcceptAsyncLargeBlock() throws Exception {
+        openCloseTracker.expectUponTeardownNumOpenNew(2);
+        openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(0);
 
         COMPOUND4args copyArgs = new CompoundBuilder()
                 .withMinorversion(2)

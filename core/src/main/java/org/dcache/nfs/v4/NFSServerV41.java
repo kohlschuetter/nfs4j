@@ -69,7 +69,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
         _exportTable = builder.exportTable;
         _operationExecutor = builder.operationExecutor;
         _nlm = builder.nlm == null ? new SimpleLm() : builder.nlm;
-        _statHandler = builder.stateHandler == null ? new NFSv4StateHandler() : builder.stateHandler;
+        _statHandler = builder.stateHandler == null ? new NFSv4StateHandler(_fs) : builder.stateHandler;
 
         _implementationId = new nfs_impl_id4();
         _implementationId.nii_date = new nfstime4(builder.implementationDate.toEpochMilli());
@@ -88,7 +88,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
         _exportTable = exportTable;
         _operationExecutor = operationExecutor;
         _nlm = new SimpleLm();
-        _statHandler = new NFSv4StateHandler();
+        _statHandler = new NFSv4StateHandler(_fs);
 
         _implementationId = new nfs_impl_id4();
         _implementationId.nii_date = new nfstime4(NFSv4Defaults.NFS4_IMPLEMENTATION_DATE);

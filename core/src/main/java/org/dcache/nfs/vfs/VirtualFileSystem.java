@@ -53,7 +53,7 @@ import com.google.common.annotations.Beta;
  *
  * @since 0.0.5
  */
-public interface VirtualFileSystem {
+public interface VirtualFileSystem extends OpenCloseTracker {
 
     /**
      * Check access to file system object.
