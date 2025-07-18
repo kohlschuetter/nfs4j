@@ -17,4 +17,18 @@ public interface OpenHandle {
      * @return The opaque.
      */
     Opaque getOpaque();
+
+    /**
+     * Returns the clientId for the handle.
+     * 
+     * @return The clientId.
+     */
+    long getClientId();
+
+    /**
+     * Returns the sequenceId for the handle.
+     * 
+     * @return The sequenceId.
+     */
+    int getSequenceId();
 }
