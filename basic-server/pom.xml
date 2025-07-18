@@ -52,6 +52,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.45.1</version>
                 <configuration>
+                    <skip>true</skip>
                     <images>
                         <image>
                             <name>%g/nfs4j-server:%l</name>
