@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -49,6 +50,7 @@ import org.junit.Test;
 
 public class NFS4ClientTest {
 
+    private OpenCloseTrackerTester ocTracker;
     private NFSv4StateHandler stateHandler;
     private NFS4Client nfsClient;
     private StateOwner owner;
@@ -57,10 +59,11 @@ public class NFS4ClientTest {
     @Before
     public void setUp() throws UnknownHostException, ChimeraNFSException {
 
+        ocTracker = new OpenCloseTrackerTester();
         clock = new ManualClock();
         var leaseTime = Duration.ofSeconds(NFSv4Defaults.NFS4_LEASE_TIME);
         var clientStore = new EphemeralClientRecoveryStore();
-        stateHandler = new NFSv4StateHandler(leaseTime, 0, clientStore,
+        stateHandler = new NFSv4StateHandler(ocTracker, leaseTime, 0, clientStore,
                 new DefaultClientCache(leaseTime, new NopCacheEventListener<>()), clock);
 
         nfsClient = createClient(stateHandler);
@@ -172,7 +175,7 @@ public class NFS4ClientTest {
     }
 
     @Test
-    public void testClientDisposeCleansState() throws ChimeraNFSException {
+    public void testClientDisposeCleansState() throws ChimeraNFSException, IOException {
         AtomicBoolean isDisposed = new AtomicBoolean(false);
 
         NFS4State state = nfsClient.createOpenState(owner);

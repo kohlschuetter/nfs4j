@@ -20,7 +20,8 @@
 package org.dcache.nfs.v4;
 
 import static org.dcache.nfs.v4.NfsTestUtils.createClient;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -47,7 +48,7 @@ public class NFSv4StateHandlerTest {
 
     @Before
     public void setUp() throws UnknownHostException, BadSeqidException {
-        _stateHandler = new NFSv4StateHandler();
+        _stateHandler = new NFSv4StateHandler(new OpenCloseTrackerTester.ExpectNoCalls());
         _client = createClient(_stateHandler);
         _owner = _client.getOrCreateOwner("client test".getBytes(StandardCharsets.UTF_8), new seqid4(0));
     }
@@ -110,8 +111,8 @@ public class NFSv4StateHandlerTest {
     @Test
     public void testInstanceId() throws Exception {
         int instanceId = 18;
-        NFSv4StateHandler stateHandler = new NFSv4StateHandler(Duration.ofSeconds(2), instanceId,
-                new EphemeralClientRecoveryStore());
+        NFSv4StateHandler stateHandler = new NFSv4StateHandler(new OpenCloseTrackerTester.ExpectNoCalls(), Duration
+                .ofSeconds(2), instanceId, new EphemeralClientRecoveryStore());
         try {
             assertEquals("Invalid instance id returned", instanceId, stateHandler.getInstanceId());
         } finally {
@@ -122,8 +123,8 @@ public class NFSv4StateHandlerTest {
     @Test
     public void testInstanceIdByStateid() throws UnknownHostException, ChimeraNFSException, Exception {
         int instanceId = 117;
-        NFSv4StateHandler stateHandler = new NFSv4StateHandler(Duration.ofSeconds(2), instanceId,
-                new EphemeralClientRecoveryStore());
+        NFSv4StateHandler stateHandler = new NFSv4StateHandler(new OpenCloseTrackerTester.ExpectNoCalls(), Duration
+                .ofSeconds(2), instanceId, new EphemeralClientRecoveryStore());
         try {
             NFS4State state = createClient(stateHandler).createOpenState(_owner);
             assertEquals("Invalid instance id returned", instanceId, NFSv4StateHandler.getInstanceId(state.stateid()));

@@ -107,8 +107,8 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public int read(Inode inode, ByteBuffer data, long offset, Runnable eofReached) throws IOException {
-        return delegate().read(inode, data, offset, eofReached);
+    public int read(OpenHandle oh, Inode inode, ByteBuffer data, long offset, Runnable eofReached) throws IOException {
+        return delegate().read(oh, inode, data, offset, eofReached);
     }
 
     @Override
@@ -136,6 +136,12 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     public WriteResult write(Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
             throws IOException {
         return delegate().write(inode, data, offset, stabilityLevel);
+    }
+
+    @Override
+    public WriteResult write(OpenHandle oh, Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
+            throws IOException {
+        return delegate().write(oh, inode, data, offset, stabilityLevel);
     }
 
     @Override
@@ -221,5 +227,16 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     @Override
     public CompletableFuture<Long> copyFileRange(Inode src, long srcPos, Inode dst, long dstPos, long len) {
         return delegate().copyFileRange(src, srcPos, dst, dstPos, len);
+    }
+
+    @Override
+    public void open(OpenHandle openStateid, Inode inode, int accessMode, int denyMode, boolean alreadyOpen)
+            throws IOException {
+        delegate().open(openStateid, inode, accessMode, denyMode, alreadyOpen);
+    }
+
+    @Override
+    public void close(OpenHandle stateid, Inode inode, int remainingOpens) {
+        delegate().close(stateid, inode, remainingOpens);
     }
 }

@@ -45,6 +45,7 @@ import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.v4.xdr.open_delegation_type4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.nfs.vfs.OpenCloseTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +81,16 @@ public class FileTracker {
      */
     private final AdaptiveDelegationLogic adlHeuristic =
             new AdaptiveDelegationLogic(4096, 4096, Duration.ofSeconds(120));
+
+    private final OpenCloseTracker openCloseTracker;
+
+    public FileTracker() {
+        this(null);
+    }
+
+    public FileTracker(OpenCloseTracker openCloseTracker) {
+        this.openCloseTracker = openCloseTracker;
+    }
 
     private static class OpenState {
 
@@ -231,7 +242,7 @@ public class FileTracker {
      * @throws ChimeraNFSException
      */
     public OpenRecord addOpen(NFS4Client client, StateOwner owner, Inode inode, int shareAccess, int shareDeny)
-            throws ChimeraNFSException {
+            throws ChimeraNFSException, IOException {
 
         // client explicitly refused delegation
         boolean acceptsDelegation = (shareAccess & nfs4_prot.OPEN4_SHARE_ACCESS_WANT_NO_DELEG) == 0;
@@ -319,6 +330,12 @@ public class FileTracker {
                     // we need to return copy to avoid modification by concurrent opens
                     var openStateid = new stateid4(os.stateid.other, os.stateid.seqid);
 
+                    if (openCloseTracker != null) {
+                        // Give the VFS a chance to check and intervene, log, etc.
+                        openCloseTracker.open(openStateid, inode, shareAccess, shareDeny,
+                                true);
+                    }
+
                     // yet another open from the same client. Let's check if we can delegate.
                     if (canDelegateRead && (os.shareAccess
                             & nfs4_prot.OPEN4_SHARE_ACCESS_BOTH) == nfs4_prot.OPEN4_SHARE_ACCESS_READ &&
@@ -339,13 +356,18 @@ public class FileTracker {
 
             NFS4State state = client.createOpenState(owner);
             stateid = state.stateid();
-            OpenState openState = new OpenState(client, owner, stateid, shareAccess, shareDeny);
-            opens.add(openState);
-            state.addDisposeListener(s -> removeOpen(inode, stateid));
             stateid.seqid++;
 
             // we need to return copy to avoid modification by concurrent opens
             var openStateid = new stateid4(stateid.other, stateid.seqid);
+            if (openCloseTracker != null) {
+                // Give the VFS a chance to check and intervene, log, etc.
+                openCloseTracker.open(openStateid, inode, shareAccess, shareDeny, false);
+            }
+
+            OpenState openState = new OpenState(client, owner, stateid, shareAccess, shareDeny);
+            opens.add(openState);
+            state.addDisposeListener(s -> removeOpen(inode, stateid));
 
             // REVISIT: currently only read-delegations are supported
             if (canDelegateRead && (wantReadDelegation || adlHeuristic.shouldDelegate(client, inode))) {
@@ -526,6 +548,7 @@ public class FileTracker {
      * @param stateid associated with the open.
      */
     void removeOpen(Inode inode, stateid4 stateid) {
+        int remainingOpens = -1;
 
         Opaque fileId = inode.getFileIdKey();
         Lock lock = filesLock.get(fileId);
@@ -546,13 +569,19 @@ public class FileTracker {
                 /**
                  * As we hold the lock, nobody else have added something into it.
                  */
-                if (opens.isEmpty()) {
+                remainingOpens = opens.size();
+                if (remainingOpens == 0) {
                     files.remove(fileId);
                 }
             }
 
         } finally {
             lock.unlock();
+
+            if (openCloseTracker != null) {
+                // Give the VFS a chance to check, log, etc.
+                openCloseTracker.close(stateid, inode, remainingOpens);
+            }
         }
     }
 
