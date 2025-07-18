@@ -98,6 +98,12 @@ public class stateid4 implements XdrAble, Serializable, OpenHandle {
         return Arrays.hashCode(other);
     }
 
+    @Override
+    public int getSequenceId() {
+        return seqid;
+    }
+
+    @Override
     public long getClientId() {
         return Bytes.getLong(other, 0);
     }
