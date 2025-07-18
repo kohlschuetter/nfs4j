@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.dcache.nfs.status.AccessException;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.OpenCloseTracker;
 import org.dcache.nfs.vfs.OpenHandle;
@@ -28,7 +29,7 @@ public class OpenCloseTrackerTester implements OpenCloseTracker {
             numOpenNew++;
         }
         if (preventOpen) {
-            throw new OpenCloseTrackerTestIOException("explicitly asked to fail \"open\"");
+            throw new AccessException("explicitly asked to fail \"open\"");
         }
     }
 
@@ -112,13 +113,5 @@ public class OpenCloseTrackerTester implements OpenCloseTracker {
 
     public void setPreventOpen(boolean preventOpen) {
         this.preventOpen = preventOpen;
-    }
-
-    public static final class OpenCloseTrackerTestIOException extends IOException {
-        private static final long serialVersionUID = 1L;
-
-        public OpenCloseTrackerTestIOException(String message) {
-            super(message);
-        }
     }
 }
