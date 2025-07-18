@@ -6,7 +6,7 @@
         Pure Java implementation NFSv3, v4 and v4.1
   </description>
 
-  <groupId>org.dcache</groupId>
+  <groupId>com.kohlschutter.nfs4j</groupId>
   <artifactId>nfs4j</artifactId>
   <version>0.28.0-SNAPSHOT</version>
   <name>Java based NFSv4.1 implementation</name>
@@ -194,7 +194,7 @@
               <version>5.2.22.RELEASE</version>
           </dependency>
           <dependency>
-              <groupId>org.dcache</groupId>
+              <groupId>com.kohlschutter.nfs4j</groupId>
               <artifactId>oncrpc4j-core</artifactId>
               <version>3.3.0</version>
           </dependency>
