@@ -7,10 +7,9 @@
         <version>0.28.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.kohlschutter.nfs4j.nfs4j</groupId>
-    <artifactId>basic-server</artifactId>
+    <groupId>com.kohlschutter.nfs4j</groupId>
+    <artifactId>nfs4j-basic-server</artifactId>
     <packaging>jar</packaging>
-
 
     <build>
         <plugins>

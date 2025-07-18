@@ -8,8 +8,7 @@
       <version>0.28.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.kohlschutter.nfs4j</groupId>
-    <artifactId>benchmarks</artifactId>
+    <artifactId>nfs4j-benchmarks</artifactId>
     <packaging>jar</packaging>
 
     <profiles>
