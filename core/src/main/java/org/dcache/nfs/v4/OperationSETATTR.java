@@ -35,6 +35,8 @@ import org.dcache.nfs.v4.xdr.SETATTR4res;
 import org.dcache.nfs.v4.xdr.bitmap4;
 import org.dcache.nfs.v4.xdr.fattr4;
 import org.dcache.nfs.v4.xdr.fattr4_acl;
+import org.dcache.nfs.v4.xdr.fattr4_archive;
+import org.dcache.nfs.v4.xdr.fattr4_hidden;
 import org.dcache.nfs.v4.xdr.mode4;
 import org.dcache.nfs.v4.xdr.nfs4_prot;
 import org.dcache.nfs.v4.xdr.nfs_argop4;
@@ -190,6 +192,16 @@ public class OperationSETATTR extends AbstractNFSv4Operation {
                 nfstime4 ctime = new nfstime4();
                 ctime.xdrDecode(xdr);
                 stat.setCTime(ctime.toMillis());
+                break;
+            case nfs4_prot.FATTR4_HIDDEN:
+                fattr4_hidden hidden = new fattr4_hidden();
+                hidden.xdrDecode(xdr);
+                stat.addFlag(Stat.Flag.UF_HIDDEN, hidden.value);
+                break;
+            case nfs4_prot.FATTR4_ARCHIVE:
+                fattr4_archive archive = new fattr4_archive();
+                archive.xdrDecode(xdr);
+                stat.addFlag(Stat.Flag.SF_ARCHIVED, archive.value);
                 break;
             case nfs4_prot.FATTR4_TIME_MODIFY_SET:
                 settime4 setMtime = new settime4();

@@ -29,7 +29,7 @@ import java.util.EnumSet;
 public class Stat implements Cloneable {
 
     public enum StatAttribute {
-        DEV, INO, MODE, NLINK, OWNER, GROUP, RDEV, SIZE, GENERATION, ATIME, MTIME, CTIME, BTIME, BACKUPTIME
+        DEV, INO, MODE, NLINK, OWNER, GROUP, RDEV, SIZE, GENERATION, ATIME, MTIME, CTIME, BTIME, BACKUPTIME, FLAGS
     };
 
     /**
@@ -123,6 +123,106 @@ public class Stat implements Cloneable {
         }
     }
 
+    // see <sys/stat.h> on macOS, BSD, etc.
+    public enum Flag {
+        /** mask of owner changeable flags */
+        UF_SETTABLE(0x0000ffff),
+
+        /** do not dump file */
+        UF_NODUMP(0x00000001),
+
+        /** file may not be changed */
+        UF_IMMUTABLE(0x00000002),
+
+        /** writes to file may only append */
+        UF_APPEND(0x00000004),
+
+        /** directory is opaque wrt. union */
+        UF_OPAQUE(0x00000008),
+
+        /** file may not be removed or renamed */
+        UF_NOUNLINK(0x00000010),
+
+        /** file is compressed (macOS) */
+        UF_COMPRESSED(0x00000020),
+
+        /** renames and deletes are tracked (macOS) */
+        UF_TRACKED(0x00000040),
+
+        /** Windows system file bit, or macOS: entitlement required for reading/writing */
+        UF_SYSTEM_OR_DATAVAULT(0x00000080),
+
+        /** sparse file (BSD); macOS: see "Extended flags" */
+        UF_SPARSE(0x00000100),
+
+        /** file is offline */
+        UF_OFFLINE(0x00000200),
+
+        /** Windows reparse point file bit */
+        UF_REPARSE(0x00000400),
+
+        /**
+         * file needs to be archived
+         *
+         * @see #SF_ARCHIVED
+         */
+        UF_ARCHIVE(0x00000800),
+
+        /** Windows readonly file bit */
+        UF_READONLY(0x00001000),
+
+        /** file is hidden */
+        UF_HIDDEN(0x00008000),
+
+        /** mask of superuser changeable flags; note that SF_DATALESS and higher are not settable */
+        SF_SETTABLE(0x3fff0000),
+        /** mask of system read-only synthetic flags */
+        SF_SYNTHETIC(0xc0000000),
+
+        /** file is archived */
+        SF_ARCHIVED(0x00010000),
+
+        /** file may not be changed */
+        SF_IMMUTABLE(0x00020000),
+
+        /** writes to file may only append */
+        SF_APPEND(0x00040000),
+
+        /** macOS: entitlement required for writing */
+        SF_RESTRICTED(0x00080000),
+
+        /** file may not be removed or renamed */
+        SF_NOUNLINK(0x00100000),
+
+        /** BSD: snapshot inode */
+        SF_SNAPSHOT(0x00200000),
+
+        /** macOS: file is a firmlink */
+        SF_FIRMLINK(0x00800000),
+
+        /** macOS: file is dataless object */
+        SF_DATALESS(0x40000000),
+        ;
+
+        private final int bitmask;
+
+        Flag(int bitmask) {
+            this.bitmask = bitmask;
+        }
+
+        public int getBitmask() {
+            return bitmask;
+        }
+
+        public static int bitmask(EnumSet<Flag> enumSet) {
+            int mask = 0;
+            for (Flag f : enumSet) {
+                mask |= f.bitmask;
+            }
+            return mask;
+        }
+    }
+
     private int _dev;
     private long _ino;
     private int _mode;
@@ -132,6 +232,8 @@ public class Stat implements Cloneable {
     private int _rdev;
     private long _size;
     private long _generation;
+    private int _flags;
+    private int _flagsMask;
 
     /*
      * Opposite to classic Unix, all times in milliseconds
@@ -367,6 +469,41 @@ public class Stat implements Cloneable {
     }
 
     /**
+     * Sets the flags, using the given flagsMask describing which flags are covered.
+     */
+    public void setFlags(int flags, int flagsMask) {
+        define(StatAttribute.FLAGS);
+        _flags = flags;
+        _flagsMask = flagsMask;
+    }
+
+    public void addFlag(Flag flag, boolean on) {
+        define(StatAttribute.FLAGS);
+        _flagsMask |= flag.bitmask;
+        if (on) {
+            _flags |= flag.bitmask;
+        }
+    }
+
+    public boolean getFlagState(Flag flag) {
+        return (_flags & flag.bitmask) != 0;
+    }
+
+    public boolean containsFlag(Flag flag) {
+        if (!isDefined(StatAttribute.FLAGS)) {
+            return false;
+        }
+        return ((_flags | _flagsMask) & flag.bitmask) != 0;
+    }
+
+    public int flagsOtherThan(int bitmask) {
+        if (!isDefined(StatAttribute.FLAGS)) {
+            return 0;
+        }
+        return ((_flags | _flagsMask) & ~bitmask);
+    }
+
+    /**
      * Retunrs files type.
      */
     public Type type() {
@@ -462,8 +599,8 @@ public class Stat implements Cloneable {
         String humanReadableMTime = LocalDateTime
                 .ofInstant(Instant.ofEpochMilli(_mtime), ZoneId.systemDefault())
                 .format(LS_TIME_FORMAT);
-        return modeToString(_mode) + " " + String.format("%4d %4d %4d %4s %s", _nlink, _owner, _group,
-                humanReadableSize, humanReadableMTime);
+        return modeToString(_mode) + " " + String.format("%4d %4d %4d %4s %s flags=%x/%x", _nlink, _owner, _group,
+                humanReadableSize, humanReadableMTime, _flags, _flagsMask);
     }
 
     /**

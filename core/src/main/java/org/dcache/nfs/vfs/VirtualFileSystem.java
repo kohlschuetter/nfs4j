@@ -606,4 +606,10 @@ public interface VirtualFileSystem extends OpenCloseTracker {
     default Inode inodeForNfsHandle(byte[] bytes) throws IOException {
         return Inode.forNfsHandle(bytes);
     }
+
+    static final EnumSet<Stat.Flag> SUPPORTED_FLAGS_NONE = EnumSet.noneOf(Stat.Flag.class);
+
+    default EnumSet<Stat.Flag> supportedFlags() {
+        return SUPPORTED_FLAGS_NONE;
+    }
 }

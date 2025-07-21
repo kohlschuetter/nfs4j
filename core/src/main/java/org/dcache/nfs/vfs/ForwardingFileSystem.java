@@ -28,6 +28,7 @@ import javax.security.auth.Subject;
 
 import org.dcache.nfs.v4.NfsIdMapping;
 import org.dcache.nfs.v4.xdr.nfsace4;
+import org.dcache.nfs.vfs.Stat.Flag;
 import org.dcache.nfs.vfs.Stat.StatAttribute;
 
 /**
@@ -238,5 +239,10 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     @Override
     public void close(OpenHandle stateid, Inode inode, int remainingOpens) {
         delegate().close(stateid, inode, remainingOpens);
+    }
+
+    @Override
+    public EnumSet<Flag> supportedFlags() {
+        return delegate().supportedFlags();
     }
 }
