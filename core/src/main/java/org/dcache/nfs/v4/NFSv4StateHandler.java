@@ -264,6 +264,7 @@ public class NFSv4StateHandler {
             //
             // https://github.com/apple-oss-distributions/NFS/blob/NFS-327.120.3/kext/nfs4_vnops.c#L2813
             // https://github.com/apple-oss-distributions/NFS/blob/NFS-327.120.3/kext/nfs4_vnops.c#L1863L1880
+            _log.info("Rejecting stateless stateid");
             throw new BadStateidException();
         }
 
