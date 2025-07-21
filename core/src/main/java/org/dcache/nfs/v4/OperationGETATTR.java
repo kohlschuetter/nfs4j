@@ -24,6 +24,7 @@ import static org.dcache.nfs.v4.NFSv4FileAttributes.SUPPORTED_ATTRS_V4_1;
 import static org.dcache.nfs.v4.NFSv4FileAttributes.SUPPORTED_ATTRS_V4_1_NO_PNFS;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +40,7 @@ import org.dcache.nfs.v4.xdr.bitmap4;
 import org.dcache.nfs.v4.xdr.fattr4;
 import org.dcache.nfs.v4.xdr.fattr4_acl;
 import org.dcache.nfs.v4.xdr.fattr4_aclsupport;
+import org.dcache.nfs.v4.xdr.fattr4_archive;
 import org.dcache.nfs.v4.xdr.fattr4_cansettime;
 import org.dcache.nfs.v4.xdr.fattr4_case_insensitive;
 import org.dcache.nfs.v4.xdr.fattr4_case_preserving;
@@ -51,6 +53,7 @@ import org.dcache.nfs.v4.xdr.fattr4_files_free;
 import org.dcache.nfs.v4.xdr.fattr4_files_total;
 import org.dcache.nfs.v4.xdr.fattr4_fs_layout_types;
 import org.dcache.nfs.v4.xdr.fattr4_fsid;
+import org.dcache.nfs.v4.xdr.fattr4_hidden;
 import org.dcache.nfs.v4.xdr.fattr4_homogeneous;
 import org.dcache.nfs.v4.xdr.fattr4_lease_time;
 import org.dcache.nfs.v4.xdr.fattr4_link_support;
@@ -200,6 +203,15 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
                     bitmap = context.getDeviceManager().isPresent() ? SUPPORTED_ATTRS_V4_1
                             : SUPPORTED_ATTRS_V4_1_NO_PNFS;
                 }
+
+                EnumSet<Stat.Flag> supportedFlags = fs.supportedFlags();
+                if (supportedFlags.contains(Stat.Flag.SF_ARCHIVED)) {
+                    bitmap[0] |= NFSv4FileAttributes.FATTR4_ARCHIVE;
+                }
+                if (supportedFlags.contains(Stat.Flag.UF_HIDDEN)) {
+                    bitmap[0] |= NFSv4FileAttributes.FATTR4_HIDDEN;
+                }
+
                 return Optional.of(new fattr4_supported_attrs(bitmap));
             case nfs4_prot.FATTR4_TYPE:
                 fattr4_type type = new fattr4_type(unixType2NFS(stat.getMode()));
@@ -246,7 +258,8 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
                         nfs4_prot.ACL4_SUPPORT_ALLOW_ACL | nfs4_prot.ACL4_SUPPORT_DENY_ACL);
                 return Optional.of(aclSupport);
             case nfs4_prot.FATTR4_ARCHIVE:
-                return Optional.empty();
+                return stat.containsFlag(Stat.Flag.SF_ARCHIVED) ? Optional.of(new fattr4_archive(stat.getFlagState(
+                        Stat.Flag.SF_ARCHIVED))) : Optional.empty();
             case nfs4_prot.FATTR4_CANSETTIME:
                 return Optional.of(new fattr4_cansettime(true));
             case nfs4_prot.FATTR4_CASE_INSENSITIVE:
@@ -275,7 +288,8 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
             case nfs4_prot.FATTR4_FS_LOCATIONS:
                 return Optional.empty();
             case nfs4_prot.FATTR4_HIDDEN:
-                return Optional.empty();
+                return stat.containsFlag(Stat.Flag.UF_HIDDEN) ? Optional.of(new fattr4_hidden(stat.getFlagState(
+                        Stat.Flag.UF_HIDDEN))) : Optional.empty();
             case nfs4_prot.FATTR4_HOMOGENEOUS:
                 return Optional.of(new fattr4_homogeneous(true));
             case nfs4_prot.FATTR4_MAXFILESIZE:

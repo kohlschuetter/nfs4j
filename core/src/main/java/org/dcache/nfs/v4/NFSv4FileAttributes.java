@@ -115,6 +115,7 @@ public interface NFSv4FileAttributes {
     public final static int NFS4_SUPPORTED_ATTRS_MASK0 = NFS4_MANDATORY |
             FATTR4_ACL |
             FATTR4_ACLSUPPORT |
+            // FATTR4_ARCHIVE | // see OperationGETATTR
             FATTR4_CANSETTIME |
             FATTR4_CASE_INSENSITIVE |
             FATTR4_CASE_PRESERVING |
@@ -124,6 +125,7 @@ public interface NFSv4FileAttributes {
             FATTR4_FILES_AVAIL |
             FATTR4_FILES_FREE |
             FATTR4_FILES_TOTAL |
+            // FATTR4_HIDDEN | // see OperationGETATTR
             FATTR4_HOMOGENEOUS |
             FATTR4_MAXFILESIZE |
             FATTR4_MAXLINK |
