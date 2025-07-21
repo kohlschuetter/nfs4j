@@ -339,7 +339,10 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
                         .getBackupTime() : 0);
                 return Optional.of(bktime);
             case nfs4_prot.FATTR4_TIME_CREATE:
-                long btimeMillis = stat.isDefined(StatAttribute.BTIME) ? stat.getBTime() : stat.getCTime();
+                if (!stat.isDefined(StatAttribute.BTIME)) {
+                    return Optional.empty();
+                }
+                long btimeMillis = stat.getBTime();
                 fattr4_time_create btime = new fattr4_time_create(btimeMillis);
                 return Optional.of(btime);
             case nfs4_prot.FATTR4_TIME_DELTA:
