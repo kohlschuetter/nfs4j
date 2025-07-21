@@ -19,7 +19,6 @@
  */
 package org.dcache.nfs.vfs;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,7 +26,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 
-public class Stat implements Serializable, Cloneable {
+public class Stat implements Cloneable {
 
     public enum StatAttribute {
         DEV, INO, MODE, NLINK, OWNER, GROUP, RDEV, SIZE, GENERATION, ATIME, MTIME, CTIME, BTIME, BACKUPTIME
@@ -39,7 +38,6 @@ public class Stat implements Serializable, Cloneable {
      */
     public static final EnumSet<StatAttribute> STAT_ATTRIBUTES_TYPE_ONLY = EnumSet.of(StatAttribute.MODE);
 
-    private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter LS_TIME_FORMAT = DateTimeFormatter.ofPattern("MMM dd HH:mm");
 
     /**
