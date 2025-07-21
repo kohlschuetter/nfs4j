@@ -30,7 +30,7 @@ import java.util.EnumSet;
 public class Stat implements Serializable, Cloneable {
 
     public enum StatAttribute {
-        DEV, INO, MODE, NLINK, OWNER, GROUP, RDEV, SIZE, GENERATION, ATIME, MTIME, CTIME, BTIME
+        DEV, INO, MODE, NLINK, OWNER, GROUP, RDEV, SIZE, GENERATION, ATIME, MTIME, CTIME, BTIME, BACKUPTIME
     };
 
     /**
@@ -142,6 +142,7 @@ public class Stat implements Serializable, Cloneable {
     private long _mtime;
     private long _ctime;
     private long _btime;
+    private long _backupTime;
 
     /**
      * Returns the ID of device containing file.
@@ -333,6 +334,22 @@ public class Stat implements Serializable, Cloneable {
     public void setBTime(long btime) {
         define(StatAttribute.BTIME);
         _btime = btime;
+    }
+
+    /**
+     * Returns the last-backup time, in milliseconds since January 1, 1970.
+     */
+    public long getBackupTime() {
+        guard(StatAttribute.BACKUPTIME);
+        return _backupTime;
+    }
+
+    /**
+     * Set the last-backup, in milliseconds since January 1, 1970.
+     */
+    public void setBackupTime(long backuptime) {
+        define(StatAttribute.BACKUPTIME);
+        _backupTime = backuptime;
     }
 
     /**

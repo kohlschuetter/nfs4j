@@ -74,6 +74,7 @@ import org.dcache.nfs.v4.xdr.fattr4_space_used;
 import org.dcache.nfs.v4.xdr.fattr4_supported_attrs;
 import org.dcache.nfs.v4.xdr.fattr4_symlink_support;
 import org.dcache.nfs.v4.xdr.fattr4_time_access;
+import org.dcache.nfs.v4.xdr.fattr4_time_backup;
 import org.dcache.nfs.v4.xdr.fattr4_time_create;
 import org.dcache.nfs.v4.xdr.fattr4_time_delta;
 import org.dcache.nfs.v4.xdr.fattr4_time_metadata;
@@ -334,7 +335,9 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
                 fattr4_time_access atime = new fattr4_time_access(stat.getATime());
                 return Optional.of(atime);
             case nfs4_prot.FATTR4_TIME_BACKUP:
-                return Optional.empty();
+                fattr4_time_backup bktime = new fattr4_time_backup(stat.isDefined(StatAttribute.BACKUPTIME) ? stat
+                        .getBackupTime() : 0);
+                return Optional.of(bktime);
             case nfs4_prot.FATTR4_TIME_CREATE:
                 long btimeMillis = stat.isDefined(StatAttribute.BTIME) ? stat.getBTime() : stat.getCTime();
                 fattr4_time_create btime = new fattr4_time_create(btimeMillis);

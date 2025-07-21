@@ -181,6 +181,11 @@ public class OperationSETATTR extends AbstractNFSv4Operation {
                 // ignore for performance
 
                 break;
+            case nfs4_prot.FATTR4_TIME_BACKUP:
+                nfstime4 backuptime = new nfstime4();
+                backuptime.xdrDecode(xdr);
+                stat.setBackupTime(backuptime.toMillis());
+                break;
             case nfs4_prot.FATTR4_TIME_CREATE:
                 nfstime4 ctime = new nfstime4();
                 ctime.xdrDecode(xdr);

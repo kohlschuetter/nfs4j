@@ -147,6 +147,7 @@ public interface NFSv4FileAttributes {
                     FATTR4_SPACE_USED |
                     FATTR4_TIME_ACCESS |
                     FATTR4_TIME_ACCESS_SET |
+                    FATTR4_TIME_BACKUP |
                     FATTR4_TIME_CREATE |
                     FATTR4_TIME_DELTA |
                     FATTR4_TIME_METADATA |
