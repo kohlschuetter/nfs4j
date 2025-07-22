@@ -1,6 +1,7 @@
 package org.dcache.nfs.v4;
 
-import static org.dcache.nfs.v4.NfsTestUtils.*;
+import static org.dcache.nfs.v4.NfsTestUtils.execute;
+import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
 
 import java.io.IOException;
 
@@ -9,13 +10,14 @@ import org.dcache.nfs.v4.xdr.COMPOUND4args;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.v4.xdr.nfs_lock_type4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
 public class OperationLOCKUTest {
 
     private NFSv4StateHandler stateHandler;
-    private Inode inode = Inode.forFile(new byte[] {1, 2, 3, 4});
+    private Inode inode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {1, 2, 3, 4}));
     private nfs_fh4 fh = new nfs_fh4(inode.toNfsHandle());
 
     @Before

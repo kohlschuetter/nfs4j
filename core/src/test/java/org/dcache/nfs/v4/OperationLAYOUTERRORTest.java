@@ -4,7 +4,6 @@ import static org.dcache.nfs.v4.NfsTestUtils.execute;
 import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;

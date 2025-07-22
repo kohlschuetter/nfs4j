@@ -127,17 +127,8 @@ public class Inode {
         return new Inode(bytes);
     }
 
-    public static Inode forFile(byte[] bytes) {
-        return new Inode(0, 0, 0, bytes);
-    }
-
-    public static Inode forFile(Opaque bytes) {
-        return new Inode(0, 0, 0, bytes);
-    }
-
-    @Deprecated
     public static Inode forFileIdKey(Opaque key) {
-        return forFile(key);
+        return new Inode(0, 0, 0, key);
     }
 
     public static Inode innerInode(Inode outerInode) {
@@ -168,7 +159,7 @@ public class Inode {
     }
 
     public Opaque toNfsHandle() {
-        return Opaque.forImmutableBytes(nfsHandle.toBytes());
+        return nfsHandle;
     }
 
     private Opaque buildNfsHandle() {

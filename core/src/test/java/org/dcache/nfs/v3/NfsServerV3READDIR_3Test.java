@@ -46,7 +46,7 @@ public class NfsServerV3READDIR_3Test {
 
     @Before
     public void setup() throws Exception {
-        dirInode = Inode.forFile(new byte[] {0, 0, 0, 1}); // the dir we want to read;
+        dirInode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {0, 0, 0, 1})); // the dir we want to read;
         dirInodePseudoFS = new Inode(0, 1, 0, new byte[] {0, 0, 0, 1}); // the handle as seen from the outside
         dirStat = new Stat(); // the stat marking it as a dir
         // noinspection OctalInteger

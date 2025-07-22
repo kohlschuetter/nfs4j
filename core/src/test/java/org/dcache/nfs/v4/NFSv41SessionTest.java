@@ -20,7 +20,9 @@
 package org.dcache.nfs.v4;
 
 import static org.dcache.nfs.v4.NfsTestUtils.createClient;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 

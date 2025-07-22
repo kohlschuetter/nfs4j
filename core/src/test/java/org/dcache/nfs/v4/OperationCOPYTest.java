@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import org.dcache.nfs.ChimeraNFSException;
@@ -35,8 +34,8 @@ public class OperationCOPYTest {
     private VirtualFileSystem vfs;
     private OpenCloseTrackerTester openCloseTracker;
 
-    private Inode srcInode = Inode.forFile(new byte[] {1, 2, 3, 4});
-    private Inode destInode = Inode.forFile(new byte[] {5, 6, 7, 8});
+    private Inode srcInode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {1, 2, 3, 4}));
+    private Inode destInode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {5, 6, 7, 8}));
     private nfs_fh4 fhSrc = new nfs_fh4(srcInode.toNfsHandle());
     private nfs_fh4 fhDest = new nfs_fh4(destInode.toNfsHandle());
 

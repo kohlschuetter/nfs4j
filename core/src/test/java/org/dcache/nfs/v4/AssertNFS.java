@@ -21,8 +21,6 @@ package org.dcache.nfs.v4;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.nfsstat;
-import org.dcache.nfs.v4.AbstractNFSv4Operation;
-import org.dcache.nfs.v4.CompoundContext;
 import org.dcache.nfs.v4.xdr.nfs_resop4;
 
 import junit.framework.AssertionFailedError;

@@ -8,20 +8,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.dcache.nfs.v4.xdr.COMPOUND4args;
 import org.dcache.nfs.v4.xdr.COMPOUND4res;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
 public class OperationLISTXATTRSTest {
 
     private VirtualFileSystem vfs;
-    private final Inode inode = Inode.forFile(new byte[] {1, 2, 3, 4});
+    private final Inode inode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {1, 2, 3, 4}));
     private final nfs_fh4 fh = new nfs_fh4(inode.toNfsHandle());
 
     @Before

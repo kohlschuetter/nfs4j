@@ -1,8 +1,8 @@
 package org.dcache.nfs.v4;
 
 import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.status.BadStateidException;

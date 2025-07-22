@@ -10,6 +10,7 @@ import java.time.Duration;
 import org.dcache.nfs.v4.NFS4Client;
 import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,20 +38,20 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void shouldDelegateReturnsFalseForFirstTime() {
-        Inode inode = Inode.forFile("file1".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file1"));
         assertFalse("File in eviction queue should not be delegated", logic.shouldDelegate(client1, inode));
     }
 
     @Test
     public void shouldDelegateReturnsTrueForActiveQueueFile() {
-        Inode inode = Inode.forFile("file1".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file1"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         assertTrue("File in active queue should be delegated", logic.shouldDelegate(client1, inode));
     }
 
     @Test
     public void isActiveReturnsTrueForActiveQueueFile() {
-        Inode inode = Inode.forFile("file4".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file4"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         boolean delegate = logic.shouldDelegate(client1, inode); // Move to active queue, delegate
         assertTrue("File in active queue should be active", logic.isInActive(client1, inode));
@@ -59,21 +60,21 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void isActiveReturnsFalseForEvictionQueueFile() {
-        Inode inode = Inode.forFile("file5".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file5"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         assertFalse("File in eviction queue should not be active", logic.isInActive(client1, inode));
     }
 
     @Test
     public void isInEvictionQueueReturnsTrueForEvictionQueueFile() {
-        Inode inode = Inode.forFile("file6".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file6"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         assertTrue("File in eviction queue should be detected", logic.isInEvictionQueue(client1, inode));
     }
 
     @Test
     public void isInEvictionQueueReturnsFalseForActiveQueueFile() {
-        Inode inode = Inode.forFile("file7".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file7"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         logic.shouldDelegate(client1, inode); // Move to active queue, delegate
         assertFalse("File in active queue should not be in eviction queue", logic.isInEvictionQueue(client1, inode));
@@ -81,15 +82,15 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void activeQueueEvictsLeastRecentlyUsedFileToEvictionQueue() {
-        Inode inode1 = Inode.forFile("file".getBytes());
+        Inode inode1 = Inode.forFileIdKey(Opaque.forUtf8Bytes("file"));
 
         logic.shouldDelegate(client1, inode1); // Add to eviction queue
 
         // trigger eviction from active queue
         for (int i = 0; i < ACTIVE_QUEUE_CAPACITY; i++) {
             // call twice to trigger move to active queue
-            logic.shouldDelegate(client1, Inode.forFile(("file" + (i + 10)).getBytes())); // Fill eviction queue
-            logic.shouldDelegate(client1, Inode.forFile(("file" + (i + 10)).getBytes())); // Fill active queue
+            logic.shouldDelegate(client1, Inode.forFileIdKey(Opaque.forUtf8Bytes("file" + (i + 10)))); // Fill eviction queue
+            logic.shouldDelegate(client1, Inode.forFileIdKey(Opaque.forUtf8Bytes("file" + (i + 10)))); // Fill active queue
         }
 
         assertTrue("File should be in eviction queue", logic.isInEvictionQueue(client1, inode1));
@@ -97,7 +98,7 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void shouldDiscardExpiredEntries() {
-        Inode inode1 = Inode.forFile("file".getBytes());
+        Inode inode1 = Inode.forFileIdKey(Opaque.forUtf8Bytes("file"));
 
         logic.shouldDelegate(client1, inode1); // Add to eviction queue
         logic.shouldDelegate(client1, inode1); // Add to active queue
@@ -107,8 +108,8 @@ public class AdaptiveDelegationLogicTest {
         // trigger eviction from active queue
         for (int i = 0; i < ACTIVE_QUEUE_CAPACITY; i++) {
             // call twice to trigger move to active queue
-            logic.shouldDelegate(client1, Inode.forFile(("file" + (i + 10)).getBytes())); // Fill eviction queue
-            logic.shouldDelegate(client1, Inode.forFile(("file" + (i + 10)).getBytes())); // Fill active queue
+            logic.shouldDelegate(client1, Inode.forFileIdKey(Opaque.forUtf8Bytes("file" + (i + 10)))); // Fill eviction queue
+            logic.shouldDelegate(client1, Inode.forFileIdKey(Opaque.forUtf8Bytes("file" + (i + 10)))); // Fill active queue
         }
 
         assertFalse("Expired entry should not be in active queue", logic.isInActive(client1, inode1));
@@ -118,7 +119,7 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void shouldMoveToEvictionQueueIfIdle() {
-        Inode inode1 = Inode.forFile("file".getBytes());
+        Inode inode1 = Inode.forFileIdKey(Opaque.forUtf8Bytes("file"));
 
         logic.shouldDelegate(client1, inode1); // Add to eviction queue
         logic.shouldDelegate(client1, inode1); // Add to active queue
@@ -132,7 +133,7 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void differentClietnsShouldNotAffectEachother() {
-        Inode inode1 = Inode.forFile("file".getBytes());
+        Inode inode1 = Inode.forFileIdKey(Opaque.forUtf8Bytes("file"));
 
         logic.shouldDelegate(client1, inode1);
         logic.shouldDelegate(client2, inode1);
@@ -143,7 +144,7 @@ public class AdaptiveDelegationLogicTest {
 
     @Test
     public void clearRemovesAllEntriesFromQueues() {
-        Inode inode = Inode.forFile("file14".getBytes());
+        Inode inode = Inode.forFileIdKey(Opaque.forUtf8Bytes("file14"));
         logic.shouldDelegate(client1, inode); // Add to eviction queue
         logic.reset();
         assertFalse("Active queue should be empty after clear", logic.isInActive(client1, inode));

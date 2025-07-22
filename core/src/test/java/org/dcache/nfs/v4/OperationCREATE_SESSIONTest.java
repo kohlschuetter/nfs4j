@@ -19,7 +19,8 @@
  */
 package org.dcache.nfs.v4;
 
-import static org.dcache.nfs.v4.NfsTestUtils.*;
+import static org.dcache.nfs.v4.NfsTestUtils.execute;
+import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
 
 import java.util.UUID;
 

@@ -45,7 +45,7 @@ public class NfsServerV3READDIRPLUS_3Test {
 
     @Before
     public void setup() throws Exception {
-        dirInode = Inode.forFile(new byte[] {0, 0, 0, 1}); // the dir we want to read;
+        dirInode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {0, 0, 0, 1})); // the dir we want to read;
         dirInodePseudoFS = new Inode(0, 1, 0, new byte[] {0, 0, 0, 1}); // the handle as seen from the outside
         dirStat = new Stat(); // the stat marking it as a dir
         // noinspection OctalInteger
@@ -176,8 +176,9 @@ public class NfsServerV3READDIRPLUS_3Test {
         when(vfs.list(eq(dirInode), any(), anyLong())).thenReturn(new DirectoryStream(cookieVerifier, dirContents));
 
         RpcCall call = new RpcCallBuilder().from("1.2.3.4", "someHost.acme.com", 42).nfs3().noAuth().build();
-        READDIRPLUS3args args = NfsV3Ops.readDirPlus(dirInodePseudoFS, 0, cookieVerifier, 3480, 1024); // only 22 entries will
-                                                                                                // fit
+        READDIRPLUS3args args = NfsV3Ops.readDirPlus(dirInodePseudoFS, 0, cookieVerifier, 3480, 1024); // only 22
+                                                                                                       // entries will
+        // fit
         READDIRPLUS3res result = nfsServer.NFSPROC3_READDIRPLUS_3(call, args);
 
         int n = 0;

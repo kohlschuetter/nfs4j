@@ -1,9 +1,16 @@
 package org.dcache.nfs.v4;
 
-import static org.dcache.nfs.v4.NfsTestUtils.*;
+import static org.dcache.nfs.v4.NfsTestUtils.execute;
 import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.dcache.nfs.v4.NfsTestUtils.generateStateId;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -18,12 +25,13 @@ import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
 public class OperationWRITETest {
 
-    private Inode inode = Inode.forFile(new byte[] {1, 2, 3, 4});
+    private Inode inode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {1, 2, 3, 4}));
     private nfs_fh4 fh = new nfs_fh4(inode.toNfsHandle());
     private VirtualFileSystem vfs;
     private Stat fileStat;

@@ -139,7 +139,7 @@ public class DummyVFS implements VirtualFileSystem {
     }
 
     private Inode toFileHandle(long inodeNumber) {
-        return Inode.forFile(Longs.toByteArray(inodeNumber));
+        return Inode.forFileIdKey(Opaque.forImmutableBytes(Longs.toByteArray(inodeNumber)));
     }
 
     private long toInodeNumber(Inode inode) {

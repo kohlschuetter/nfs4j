@@ -60,7 +60,6 @@ import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.primitives.Longs;
 import com.sun.security.auth.UnixNumericGroupPrincipal;
 import com.sun.security.auth.UnixNumericUserPrincipal;
 
@@ -86,7 +85,7 @@ public class LocalFileSystem implements VirtualFileSystem {
     }
 
     private static Inode toFh(UUID inodeNumber) {
-        return Inode.forFile(toByteArray(inodeNumber));
+        return Inode.forFileIdKey(Opaque.forImmutableBytes(toByteArray(inodeNumber)));
     }
 
     private Path resolveInode(Inode inodeNumber) throws ChimeraNFSException {

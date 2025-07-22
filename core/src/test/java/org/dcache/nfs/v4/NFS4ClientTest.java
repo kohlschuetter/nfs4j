@@ -28,7 +28,6 @@ import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -93,7 +92,7 @@ public class NFS4ClientTest {
                 .withCall(generateRpcCall())
                 .build();
 
-        context.currentInode(Inode.forFile(new byte[] {}));
+        context.currentInode(Inode.forFileIdKey(Opaque.EMPTY_OPAQUE));
         context.setSession(session);
 
         AssertNFS.assertNFS(CLOSE, context, result, nfsstat.NFS_OK);
@@ -119,7 +118,7 @@ public class NFS4ClientTest {
                 .withCall(generateRpcCall())
                 .build();
 
-        context.currentInode(Inode.forFile(new byte[] {}));
+        context.currentInode(Inode.forFileIdKey(Opaque.EMPTY_OPAQUE));
 
         AssertNFS.assertNFS(CLOSE, context, result, nfsstat.NFS_OK);
         assertFalse("client state not cleaned", nfsClient.hasState());

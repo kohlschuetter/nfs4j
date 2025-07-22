@@ -23,7 +23,7 @@ import org.junit.Test;
 public class OperationSETXATTRTest {
 
     private VirtualFileSystem vfs;
-    private final Inode inode = Inode.forFile(new byte[] {1, 2, 3, 4});
+    private final Inode inode = Inode.forFileIdKey(Opaque.forImmutableBytes(new byte[] {1, 2, 3, 4}));
     private final nfs_fh4 fh = new nfs_fh4(inode.toNfsHandle());
 
     @Before

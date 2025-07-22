@@ -88,7 +88,7 @@ public class FileTrackerBenchmark {
     public static Inode generateFileHandle() {
         byte[] b = new byte[nfs4_prot.NFS4_FHSIZE];
         ThreadLocalRandom.current().nextBytes(b);
-        return Inode.forFile(b);
+        return Inode.forFileIdKey(Opaque.forImmutableBytes(b));
     }
 
     public static void main(String[] args) throws RunnerException {
