@@ -599,8 +599,11 @@ public class Stat implements Cloneable {
         String humanReadableMTime = LocalDateTime
                 .ofInstant(Instant.ofEpochMilli(_mtime), ZoneId.systemDefault())
                 .format(LS_TIME_FORMAT);
-        return modeToString(_mode) + " " + String.format("%4d %4d %4d %4s %s flags=%x/%x", _nlink, _owner, _group,
-                humanReadableSize, humanReadableMTime, _flags, _flagsMask);
+
+        String flagsStr = isDefined(StatAttribute.FLAGS) ? String.format(" flags=%x/%x", _flags, _flagsMask) : "";
+
+        return modeToString(_mode) + " " + String.format("%4d %4d %4d %4s %s", _nlink, _owner, _group,
+                humanReadableSize, humanReadableMTime) + flagsStr;
     }
 
     /**
