@@ -58,9 +58,9 @@ public class FileHandleTest {
         assertEquals(1, fh.handleVersion());
         assertEquals(0xCAFFEE, fh.getMagic());
         assertEquals(0, fh.getGeneration());
-        byte[] opaque = fh.getFileId();
+        Opaque opaque = fh.getFileIdKey();
         assertEquals("/export/data".hashCode(), fh.exportIndex());
-        assertEquals("0:INODE:0000C37233174392456EB83E44844E8D28D6:0", new String(opaque, US_ASCII));
+        assertEquals("0:INODE:0000C37233174392456EB83E44844E8D28D6:0", new String(opaque.toBytes(), US_ASCII));
     }
 
     @Test

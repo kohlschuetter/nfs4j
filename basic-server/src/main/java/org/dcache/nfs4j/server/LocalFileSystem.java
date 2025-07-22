@@ -528,7 +528,7 @@ public class LocalFileSystem implements VirtualFileSystem {
      * @return The 64-bit inode, or {@code null} for "not available".
      */
     protected Long longInoForInode(Inode inode) {
-        return Longs.fromByteArray(inode.getFileId());
+        return inode.getFileIdKey().longAt(0);
     }
 
     @Override

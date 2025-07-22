@@ -1,9 +1,12 @@
 package org.dcache.nfs.v3;
 
 import static com.google.common.primitives.Ints.contains;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -21,6 +24,7 @@ import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.RpcAuthType;
 import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.RpcTransport;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -148,7 +152,7 @@ public class MountServerTest {
 
                 given(_fs.lookup(inode, pathElement)).willReturn(objectInode);
                 given(_fs.getattr(objectInode)).willReturn(stat);
-                given(objectInode.getFileId()).willReturn(pathElement.getBytes());
+                given(objectInode.getFileIdKey()).willReturn(Opaque.forBytes(pathElement.getBytes()));
                 inode = objectInode;
             }
 
@@ -171,7 +175,7 @@ public class MountServerTest {
 
                 given(_fs.lookup(inode, pathElement)).willReturn(objectInode);
                 given(_fs.getattr(objectInode)).willReturn(stat);
-                given(objectInode.getFileId()).willReturn(pathElement.getBytes());
+                given(objectInode.getFileIdKey()).willReturn(Opaque.forBytes(pathElement.getBytes()));
                 inode = objectInode;
             }
 

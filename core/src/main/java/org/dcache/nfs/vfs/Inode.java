@@ -21,11 +21,8 @@ package org.dcache.nfs.vfs;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.util.Opaque;
-
-import com.google.common.io.BaseEncoding;
 
 /**
  * NFS file handle on wire representation format v1.
@@ -50,9 +47,8 @@ public class Inode {
     private final int generation;
     private final int exportIdx;
     private final int type;
-    private final byte[] nfsHandle;
-
     private final Opaque opaqueKey;
+    private final Opaque nfsHandle;
 
     /**
      * This constructor will become marked {@code protected} in a future version.
@@ -67,7 +63,7 @@ public class Inode {
         this(generation, exportIdx, type, Opaque.forBytes(fs_opaque));
     }
 
-    private Inode(int generation, int exportIdx, int type, Opaque fileIdKey) {
+    Inode(int generation, int exportIdx, int type, Opaque fileIdKey) {
         this.version = VERSION;
         this.magic = MAGIC;
         this.generation = generation;
@@ -79,21 +75,11 @@ public class Inode {
     }
 
     public Inode(Opaque bytes) {
-        this(bytes.toBytes()); // FIXME optimize this
-    }
-
-    /**
-     * This constructor will become marked {@code protected} in a future version.
-     *
-     * @param bytes The VFS-specific bytes.
-     */
-    @Deprecated
-    public Inode(byte[] bytes) {
-        if (bytes.length < MIN_LEN) {
+        if (bytes.numBytes() < MIN_LEN) {
             throw new IllegalArgumentException("too short");
         }
 
-        ByteBuffer b = ByteBuffer.wrap(bytes);
+        ByteBuffer b = bytes.asByteBuffer(0, bytes.numBytes());
         b.order(ByteOrder.BIG_ENDIAN);
 
         int magic_version = b.getInt();
@@ -114,7 +100,7 @@ public class Inode {
         int olen = (int) b.get();
         this.opaqueKey = Opaque.forBytes(b, olen);
 
-        this.nfsHandle = bytes.clone();
+        this.nfsHandle = bytes;
     }
 
     @Deprecated(forRemoval = true)
@@ -134,11 +120,7 @@ public class Inode {
 
     @Override
     public String toString() {
-        return BaseEncoding.base16().lowerCase().encode(nfsHandle);
-    }
-
-    public static Inode forNfsHandle(byte[] bytes) {
-        return new Inode(bytes);
+        return nfsHandle.toString();
     }
 
     public static Inode forNfsHandle(Opaque bytes) {
@@ -160,11 +142,6 @@ public class Inode {
 
     public static Inode innerInode(Inode outerInode) {
         return forFileIdKey(outerInode.getFileIdKey());
-    }
-
-    @Deprecated(forRemoval = true)
-    public byte[] getFileId() {
-        return opaqueKey.toBytes();
     }
 
     /**
@@ -191,10 +168,10 @@ public class Inode {
     }
 
     public Opaque toNfsHandle() {
-        return Opaque.forImmutableBytes(nfsHandle.clone());
+        return Opaque.forImmutableBytes(nfsHandle.toBytes());
     }
 
-    private byte[] buildNfsHandle() {
+    private Opaque buildNfsHandle() {
         int opaqueLen = opaqueKey.numBytes();
         if (opaqueLen < 0 || opaqueLen > 255) {
             throw new IllegalStateException("Invalid opaque key length");
@@ -211,12 +188,12 @@ public class Inode {
         b.put((byte) type);
         b.put((byte) opaqueLen);
         opaqueKey.putBytes(b);
-        return bytes;
+        return Opaque.forImmutableBytes(bytes);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(nfsHandle);
+        return nfsHandle.hashCode();
     }
 
     @Override
@@ -228,7 +205,7 @@ public class Inode {
             return false;
         }
         final Inode other = (Inode) obj;
-        return Arrays.equals(nfsHandle, other.nfsHandle);
+        return nfsHandle.equals(other.nfsHandle);
     }
 
     public boolean isPseudoInode() {

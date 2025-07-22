@@ -639,7 +639,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     public static Inode pseudoIdToReal(Inode inode, int index) {
-        return new Inode(0, index, 0, inode.getFileId());
+        return new Inode(0, index, 0, inode.getFileIdKey());
     }
 
     private int getIndexId(PseudoFsNode node) {
@@ -731,7 +731,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Inode realToPseudo(Inode inode, int index) {
-        return new Inode(0, index, 1, inode.getFileId());
+        return new Inode(0, index, 1, inode.getFileIdKey());
     }
 
     private void pathToPseudoFs(final PseudoFsNode root, Set<PseudoFsNode> all, FsExport e) {

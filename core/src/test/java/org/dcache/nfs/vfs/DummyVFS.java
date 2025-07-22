@@ -143,7 +143,7 @@ public class DummyVFS implements VirtualFileSystem {
     }
 
     private long toInodeNumber(Inode inode) {
-        return Longs.fromByteArray(inode.getFileId());
+        return inode.getFileIdKey().longAt(0);
     }
 
     private Path resolveInode(long inodeNumber) throws NoEntException {
