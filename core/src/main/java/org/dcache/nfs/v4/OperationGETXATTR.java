@@ -31,6 +31,7 @@ import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.v4.xdr.xattrvalue4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 
 public class OperationGETXATTR extends AbstractNFSv4Operation {
 
@@ -44,7 +45,7 @@ public class OperationGETXATTR extends AbstractNFSv4Operation {
 
         try {
             Inode inode = context.currentInode();
-            byte[] value = context.getFs().getXattr(inode, _args.opgetxattr.gxa_name);
+            Opaque value = context.getFs().getXattr(inode, _args.opgetxattr.gxa_name);
             result.opgetxattr.gxr_value = new xattrvalue4(value);
             result.setStatus(nfsstat.NFS_OK);
         } catch (NotSuppException e) {

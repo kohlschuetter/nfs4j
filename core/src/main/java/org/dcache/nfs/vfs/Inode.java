@@ -83,6 +83,10 @@ public class Inode {
         this.nfsHandle = buildNfsHandle();
     }
 
+    public Inode(Opaque bytes) {
+        this(bytes.toBytes()); // FIXME optimize this
+    }
+
     /**
      * This constructor will become marked {@code protected} in a future version.
      *
@@ -142,12 +146,21 @@ public class Inode {
         return new Inode(bytes);
     }
 
+    public static Inode forNfsHandle(Opaque bytes) {
+        return new Inode(bytes);
+    }
+
     public static Inode forFile(byte[] bytes) {
         return new Inode(0, 0, 0, bytes);
     }
 
+    public static Inode forFile(Opaque bytes) {
+        return new Inode(0, 0, 0, bytes);
+    }
+
+    @Deprecated
     public static Inode forFileIdKey(Opaque key) {
-        return new Inode(0, 0, 0, key);
+        return forFile(key);
     }
 
     public static Inode innerInode(Inode outerInode) {
@@ -182,8 +195,8 @@ public class Inode {
         return opaqueKey;
     }
 
-    public byte[] toNfsHandle() {
-        return nfsHandle.clone();
+    public Opaque toNfsHandle() {
+        return Opaque.forImmutableBytes(nfsHandle.clone());
     }
 
     private byte[] buildNfsHandle() {

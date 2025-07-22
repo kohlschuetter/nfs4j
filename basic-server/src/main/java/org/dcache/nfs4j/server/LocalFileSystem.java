@@ -56,6 +56,7 @@ import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.Stat.Type;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,7 +280,7 @@ public class LocalFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public DirectoryStream list(Inode inode, byte[] bytes, long l) throws IOException {
+    public DirectoryStream list(Inode inode, Opaque cookieVerifier, long l) throws IOException {
         Path path = resolveInode(inode);
         final List<DirectoryEntry> list = new ArrayList<>();
         try (java.nio.file.DirectoryStream<Path> ds = Files.newDirectoryStream(path)) {
@@ -302,7 +303,7 @@ public class LocalFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public byte[] directoryVerifier(Inode inode) throws IOException {
+    public Opaque directoryVerifier(Inode inode) throws IOException {
         return DirectoryStream.ZERO_VERIFIER;
     }
 
@@ -455,7 +456,17 @@ public class LocalFileSystem implements VirtualFileSystem {
     public WriteResult write(Inode inode, byte[] data, long offset, int count, StabilityLevel stabilityLevel)
             throws IOException {
         Path path = resolveInode(inode);
-        ByteBuffer srcBuffer = ByteBuffer.wrap(data, 0, count);
+        ByteBuffer srcBuffer = ByteBuffer.wrap(data);
+        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
+            int bytesWritten = channel.write(srcBuffer, offset);
+            return new WriteResult(StabilityLevel.FILE_SYNC, bytesWritten);
+        }
+    }
+
+    @Override
+    public WriteResult write(Inode inode, ByteBuffer srcBuffer, long offset, StabilityLevel stabilityLevel)
+            throws IOException {
+        Path path = resolveInode(inode);
         try (FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
             int bytesWritten = channel.write(srcBuffer, offset);
             return new WriteResult(StabilityLevel.FILE_SYNC, bytesWritten);

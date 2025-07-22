@@ -22,13 +22,14 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class client_owner4 implements XdrAble {
     public verifier4 co_verifier;
-    public byte[] co_ownerid;
+    public Opaque co_ownerid;
 
     public client_owner4() {
     }

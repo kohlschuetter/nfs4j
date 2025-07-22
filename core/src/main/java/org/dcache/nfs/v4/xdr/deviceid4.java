@@ -20,23 +20,21 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
-import com.google.common.io.BaseEncoding;
-
 public class deviceid4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public deviceid4() {
     }
 
-    public deviceid4(byte[] value) {
+    public deviceid4(Opaque value) {
         this.value = value;
     }
 
@@ -57,7 +55,7 @@ public class deviceid4 implements XdrAble {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(value);
+        return value.hashCode();
     }
 
     @Override
@@ -68,12 +66,12 @@ public class deviceid4 implements XdrAble {
             return false;
 
         final deviceid4 other = (deviceid4) obj;
-        return Arrays.equals(value, other.value);
+        return value.equals(other.value);
     }
 
     @Override
     public String toString() {
-        return BaseEncoding.base16().lowerCase().encode(value);
+        return value.toString();
     }
 }
 // End of deviceid4.java

@@ -1,6 +1,8 @@
 package org.dcache.nfs.vfs;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.Arrays;
 import javax.security.auth.Subject;
 
 import org.dcache.nfs.v4.xdr.nfs4_prot;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -191,7 +194,7 @@ public class VfsCacheTest {
 
         vfsCache.getattr(file);
 
-        vfsCache.setXattr(file, "attr1", new byte[] {0x01}, VirtualFileSystem.SetXattrMode.CREATE);
+        vfsCache.setXattr(file, "attr1", Opaque.forImmutableBytes(new byte[] {0x01}), VirtualFileSystem.SetXattrMode.CREATE);
         vfsCache.getattr(file);
 
         verify(vfs, times(2)).getattr(file);
@@ -202,7 +205,7 @@ public class VfsCacheTest {
 
         Inode file = createFile(root, "foo");
 
-        vfsCache.setXattr(file, "attr1", new byte[] {0x01}, VirtualFileSystem.SetXattrMode.CREATE);
+        vfsCache.setXattr(file, "attr1", Opaque.forImmutableBytes(new byte[] {0x01}), VirtualFileSystem.SetXattrMode.CREATE);
         vfsCache.getattr(file);
         vfsCache.removeXattr(file, "attr1");
         vfsCache.getattr(file);
@@ -239,7 +242,7 @@ public class VfsCacheTest {
     public void shouldReadThroughReaddirCacheOnUnknownVerifier() throws IOException {
 
         vfsCache.list(root, DirectoryStream.ZERO_VERIFIER, 0L);
-        vfsCache.list(root, Arrays.copyOf(new byte[] {0x01}, nfs4_prot.NFS4_VERIFIER_SIZE), 0L);
+        vfsCache.list(root, Opaque.forBytes(Arrays.copyOf(new byte[] {0x01}, nfs4_prot.NFS4_VERIFIER_SIZE)), 0L);
 
         verify(vfs, times(2)).list(root, DirectoryStream.ZERO_VERIFIER, 0L);
     }

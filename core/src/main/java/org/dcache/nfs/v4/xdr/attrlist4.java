@@ -22,18 +22,19 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class attrlist4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public attrlist4() {
     }
 
-    public attrlist4(byte[] value) {
+    public attrlist4(Opaque value) {
         this.value = value;
     }
 

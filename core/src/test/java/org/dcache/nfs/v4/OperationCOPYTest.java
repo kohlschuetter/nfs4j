@@ -22,6 +22,7 @@ import org.dcache.nfs.v4.xdr.state_owner4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class OperationCOPYTest {
 
         state_owner4 owner = new state_owner4();
         owner.clientid = client.getId();
-        owner.owner = "tests".getBytes(StandardCharsets.UTF_8);
+        owner.owner = Opaque.forUtf8Bytes("tests");
 
         StateOwner stateOwner = new StateOwner(owner, 1);
 

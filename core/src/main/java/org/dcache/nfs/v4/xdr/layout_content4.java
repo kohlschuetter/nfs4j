@@ -22,13 +22,14 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class layout_content4 implements XdrAble {
     public int loc_type;
-    public byte[] loc_body;
+    public Opaque loc_body;
 
     public layout_content4() {
     }

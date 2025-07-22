@@ -9,23 +9,25 @@ import org.dcache.nfs.v3.xdr.nfs3_prot;
 import org.dcache.nfs.v3.xdr.nfs_fh3;
 import org.dcache.nfs.v3.xdr.uint32;
 import org.dcache.nfs.v3.xdr.uint64;
-import org.dcache.nfs.vfs.FileHandle;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 
 public class NfsV3Ops {
     public static READDIR3args readDir(Inode requestedDirHandle) {
-        return readDir(requestedDirHandle, 0, new byte[nfs3_prot.NFS3_COOKIEVERFSIZE], Integer.MAX_VALUE);
+        return readDir(requestedDirHandle, 0, Opaque.forNZeroBytes(nfs3_prot.NFS3_COOKIEVERFSIZE),
+                Integer.MAX_VALUE);
     }
 
     public static READDIR3args readDir(Inode requestedDirHandle, int maxResponseSize) {
-        return readDir(requestedDirHandle, 0, new byte[nfs3_prot.NFS3_COOKIEVERFSIZE], maxResponseSize);
+        return readDir(requestedDirHandle, 0, Opaque.forNZeroBytes(nfs3_prot.NFS3_COOKIEVERFSIZE),
+                maxResponseSize);
     }
 
-    public static READDIR3args readDir(Inode requestedDirHandle, long cookie, byte[] cookieVerifier) {
+    public static READDIR3args readDir(Inode requestedDirHandle, long cookie, Opaque cookieVerifier) {
         return readDir(requestedDirHandle, cookie, cookieVerifier, Integer.MAX_VALUE);
     }
 
-    public static READDIR3args readDir(Inode requestedDirHandle, long cookie, byte[] cookieVerifier,
+    public static READDIR3args readDir(Inode requestedDirHandle, long cookie, Opaque cookieVerifier,
             int maxResponseBytes) {
         READDIR3args args = new READDIR3args();
         args.dir = new nfs_fh3();
@@ -37,20 +39,22 @@ public class NfsV3Ops {
     }
 
     public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle) {
-        return readDirPlus(requestedDirHandle, 0, new byte[nfs3_prot.NFS3_COOKIEVERFSIZE], Integer.MAX_VALUE,
+        return readDirPlus(requestedDirHandle, 0, Opaque.forNZeroBytes(nfs3_prot.NFS3_COOKIEVERFSIZE),
+                Integer.MAX_VALUE,
                 Integer.MAX_VALUE);
     }
 
     public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle, int maxResponseSize) {
-        return readDirPlus(requestedDirHandle, 0, new byte[nfs3_prot.NFS3_COOKIEVERFSIZE], maxResponseSize,
+        return readDirPlus(requestedDirHandle, 0, Opaque.forNZeroBytes(nfs3_prot.NFS3_COOKIEVERFSIZE),
+                maxResponseSize,
                 maxResponseSize);
     }
 
-    public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle, long cookie, byte[] cookieVerifier) {
+    public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle, long cookie, Opaque cookieVerifier) {
         return readDirPlus(requestedDirHandle, cookie, cookieVerifier, Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
 
-    public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle, long cookie, byte[] cookieVerifier,
+    public static READDIRPLUS3args readDirPlus(Inode requestedDirHandle, long cookie, Opaque cookieVerifier,
             int maxResponseBytes, int maxDirectoryListingBytes) {
         READDIRPLUS3args args = new READDIRPLUS3args();
         args.dir = new nfs_fh3();

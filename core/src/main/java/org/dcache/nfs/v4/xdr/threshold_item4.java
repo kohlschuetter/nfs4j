@@ -22,6 +22,7 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -29,7 +30,7 @@ import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 public class threshold_item4 implements XdrAble {
     public int thi_layout_type;
     public bitmap4 thi_hintset;
-    public byte[] thi_hintlist;
+    public Opaque thi_hintlist;
 
     public threshold_item4() {
     }

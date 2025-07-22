@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.security.Principal;
 import java.time.Clock;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +50,7 @@ import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.nfs.vfs.OpenCloseTracker;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +288,7 @@ public class NFSv4StateHandler {
         _readLock.lock();
         try {
             checkState(_running, "NFS state handler not running");
-            clientid4 clientId = new clientid4(Bytes.getLong(id.value, 0));
+            clientid4 clientId = new clientid4(id.value.longAt(0));
             NFS4Client client = _clientsByServerId.get(clientId);
             if (client == null) {
                 throw new BadSessionException("session not found: " + id);
@@ -307,13 +307,13 @@ public class NFSv4StateHandler {
      *
      * @return an existing client record or null, if not matching record found.
      */
-    public NFS4Client clientByOwner(byte[] ownerid) {
+    public NFS4Client clientByOwner(Opaque ownerid) {
 
         _readLock.lock();
         try {
             return _clientsByServerId
                     .stream()
-                    .filter(c -> Arrays.equals(c.getOwnerId(), ownerid))
+                    .filter(c -> c.getOwnerId().equals(ownerid))
                     .findAny()
                     .orElse(null);
         } finally {
@@ -348,7 +348,7 @@ public class NFSv4StateHandler {
     }
 
     public NFS4Client createClient(InetSocketAddress clientAddress, InetSocketAddress localAddress, int minorVersion,
-            byte[] ownerID, verifier4 verifier, Principal principal, boolean callbackNeeded) {
+            Opaque ownerID, verifier4 verifier, Principal principal, boolean callbackNeeded) {
         NFS4Client client = new NFS4Client(this, nextClientId(),
                 minorVersion, clientAddress, localAddress, ownerID, verifier,
                 principal, _leaseTime, callbackNeeded);
@@ -404,7 +404,7 @@ public class NFSv4StateHandler {
      *
      * @param owner client
      */
-    public synchronized void reclaimComplete(byte[] owner) {
+    public synchronized void reclaimComplete(Opaque owner) {
         clientStore.reclaimClient(owner);
     }
 
@@ -413,7 +413,7 @@ public class NFSv4StateHandler {
      *
      * @param owner client
      */
-    public synchronized void wantReclaim(byte[] owner) throws ChimeraNFSException {
+    public synchronized void wantReclaim(Opaque owner) throws ChimeraNFSException {
         clientStore.wantReclaim(owner);
     }
 
@@ -468,7 +468,7 @@ public class NFSv4StateHandler {
      * @return state hander id.
      */
     public static int getInstanceId(stateid4 stateid) {
-        long clientid = Bytes.getLong(stateid.other, 0);
+        long clientid = stateid.other.longAt(0);
         return (int) (clientid >> 16) & 0xFFFF;
     }
 
@@ -501,7 +501,7 @@ public class NFSv4StateHandler {
         // we eat the first 8 bits if the counter, however, we don't expect 16M states be active at the same time,
         // thus the probability of a collision is too low
         Bytes.putInt(other, 8, count << 8 | (type & 0xFF));
-        return new stateid4(other, STATE_INITIAL_SEQUENCE);
+        return new stateid4(Opaque.forImmutableBytes(other), STATE_INITIAL_SEQUENCE);
     }
 
     /**
@@ -517,7 +517,7 @@ public class NFSv4StateHandler {
         byte[] id = new byte[nfs4_prot.NFS4_SESSIONID_SIZE];
         Bytes.putLong(id, 0, client.getId().value);
         Bytes.putInt(id, 12, sequence);
-        return new sessionid4(id);
+        return new sessionid4(Opaque.forImmutableBytes(id));
     }
 
     /**

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.dcache.nfs.status.BadXdrException;
 import org.dcache.nfs.v4.xdr.COMPOUND4args;
@@ -17,6 +16,7 @@ import org.dcache.nfs.v4.xdr.setxattr_option4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public class OperationSETXATTRTest {
     public void testPropageteSetXattrModeEither() throws IOException {
 
         String key = "xattr1";
-        byte[] expectedValue = "value1".getBytes(StandardCharsets.UTF_8);
+        Opaque expectedValue = Opaque.forUtf8Bytes("value1");
 
         COMPOUND4args setxattrArgs = new CompoundBuilder()
                 .withPutfh(fh)
@@ -71,7 +71,7 @@ public class OperationSETXATTRTest {
     public void testPropageteSetXattrModeReplace() throws IOException {
 
         String key = "xattr1";
-        byte[] expectedValue = "value1".getBytes(StandardCharsets.UTF_8);
+        Opaque expectedValue = Opaque.forUtf8Bytes("value1");
 
         COMPOUND4args setxattrArgs = new CompoundBuilder()
                 .withPutfh(fh)
@@ -92,7 +92,7 @@ public class OperationSETXATTRTest {
     public void testPropageteSetXattrModeCreate() throws IOException {
 
         String key = "xattr1";
-        byte[] expectedValue = "value1".getBytes(StandardCharsets.UTF_8);
+        Opaque expectedValue = Opaque.forUtf8Bytes("value1");
 
         COMPOUND4args setxattrArgs = new CompoundBuilder()
                 .withPutfh(fh)
@@ -113,7 +113,7 @@ public class OperationSETXATTRTest {
     public void testPropageteSetXattrModeInval() throws IOException {
 
         String key = "xattr1";
-        byte[] expectedValue = "value1".getBytes(StandardCharsets.UTF_8);
+        Opaque expectedValue = Opaque.forUtf8Bytes("value1");
 
         COMPOUND4args setxattrArgs = new CompoundBuilder()
                 .withPutfh(fh)

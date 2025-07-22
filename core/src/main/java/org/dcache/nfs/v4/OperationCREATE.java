@@ -86,7 +86,7 @@ public class OperationCREATE extends AbstractNFSv4Operation {
                         context.getSubject(), mode);
                 break;
             case nfs_ftype4.NF4LNK:
-                String linkDest = NameFilter.convertPath(_args.opcreate.objtype.linkdata.value.value);
+                String linkDest = NameFilter.convertPath(_args.opcreate.objtype.linkdata.value.value.toBytes());
                 inode = context.getFs().symlink(context.currentInode(), name, linkDest,
                         context.getSubject(), mode);
                 break;

@@ -491,7 +491,7 @@ public class FileTracker {
         lock.lock();
         try {
 
-            switch (stateid.other[11]) {
+            switch (stateid.other.byteAt(11)) {
                 case Stateids.LOCK_STATE_ID:
                     NFS4State lockState = client.state(stateid);
                     stateid = lockState.getOpenState().stateid();

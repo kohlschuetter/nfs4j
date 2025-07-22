@@ -22,12 +22,13 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class SET_SSV4resok implements XdrAble {
-    public byte[] ssr_digest;
+    public Opaque ssr_digest;
 
     public SET_SSV4resok() {
     }

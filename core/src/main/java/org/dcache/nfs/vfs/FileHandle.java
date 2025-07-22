@@ -92,6 +92,6 @@ public class FileHandle extends Inode {
     }
 
     public byte[] bytes() {
-        return toNfsHandle();
+        return toNfsHandle().toBytes();
     }
 }

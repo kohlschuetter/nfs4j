@@ -22,18 +22,19 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class gsshandle4_t implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public gsshandle4_t() {
     }
 
-    public gsshandle4_t(byte[] value) {
+    public gsshandle4_t(Opaque value) {
         this.value = value;
     }
 

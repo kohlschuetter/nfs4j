@@ -146,7 +146,7 @@ public class NFSv41Session {
 
     @Override
     public String toString() {
-        return _client.getRemoteAddress() + " : " + BaseEncoding.base16().lowerCase().encode(_session.value);
+        return _client.getRemoteAddress() + " : " + _session.value.toBase64();
     }
 
     /**

@@ -44,6 +44,7 @@ import org.dcache.oncrpc4j.rpc.RpcAuthTypeUnix;
 import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.RpcTransport;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 
 class NfsTestUtils {
 
@@ -72,7 +73,8 @@ class NfsTestUtils {
         Bytes.putLong(bootTime, 0, System.currentTimeMillis());
 
         ClientCB mockCallBack = mock(ClientCB.class);
-        var client = stateHandler.createClient(address, address, minor, owner, new verifier4(bootTime), null, false);
+        var client = stateHandler.createClient(address, address, minor, Opaque.forImmutableBytes(owner), new verifier4(Opaque.forImmutableBytes(
+                bootTime)), null, false);
         client.setCB(mockCallBack);
 
         return client;
@@ -117,7 +119,7 @@ class NfsTestUtils {
     public static nfs_fh4 generateFileHandle() {
         byte[] b = new byte[nfs4_prot.NFS4_FHSIZE];
         RANDOM.nextBytes(b);
-        return new nfs_fh4(b);
+        return new nfs_fh4(Opaque.forImmutableBytes(b));
     }
 
     public static RpcCall generateRpcCall() {
@@ -139,6 +141,6 @@ class NfsTestUtils {
         byte[] b = new byte[12];
         RANDOM.nextBytes(b);
         b[11] = Stateids.OPEN_STATE_ID;
-        return new stateid4(b, 1);
+        return new stateid4(Opaque.forImmutableBytes(b), 1);
     }
 }

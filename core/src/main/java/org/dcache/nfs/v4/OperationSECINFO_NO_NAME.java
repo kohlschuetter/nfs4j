@@ -43,6 +43,7 @@ import org.dcache.nfs.vfs.Inode;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
 import org.dcache.oncrpc4j.rpc.RpcAuthType;
 import org.dcache.oncrpc4j.rpc.gss.RpcGssService;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 
@@ -100,7 +101,7 @@ public class OperationSECINFO_NO_NAME extends AbstractNFSv4Operation {
 
         final rpcsec_gss_info gssInfo = new rpcsec_gss_info();
         final Oid oid = new Oid(K5OID);
-        gssInfo.oid = new sec_oid4(oid.getDER());
+        gssInfo.oid = new sec_oid4(Opaque.forImmutableBytes(oid.getDER()));
         gssInfo.qop = new qop4(DEFAULT_QOP);
         switch (sec) {
             case KRB5:

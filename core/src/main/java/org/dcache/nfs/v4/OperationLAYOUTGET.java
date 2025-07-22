@@ -119,7 +119,7 @@ public class OperationLAYOUTGET extends AbstractNFSv4Operation {
          */
         int layoutBodySize = 0;
         for (layout4 layout : layoutSegments) {
-            layoutBodySize += layout.lo_content.loc_body.length;
+            layoutBodySize += layout.lo_content.loc_body.numBytes();
             if (layoutBodySize > _args.oplayoutget.loga_maxcount.value) {
                 break;
             }

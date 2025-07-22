@@ -2,7 +2,7 @@ package org.dcache.nfs.v4;
 
 import static org.dcache.nfs.v4.NfsTestUtils.execute;
 import static org.dcache.nfs.v4.NfsTestUtils.generateRpcCall;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,6 +15,7 @@ import org.dcache.nfs.v4.xdr.COMPOUND4res;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class OperationGETXATTRTest {
     public void testPropageteGetXattr() throws IOException {
 
         String key = "xattr1";
-        byte[] expectedValue = "value1".getBytes(StandardCharsets.UTF_8);
+        Opaque expectedValue = Opaque.forUtf8Bytes("value1");
 
         COMPOUND4args getxattrArgs = new CompoundBuilder()
                 .withPutfh(fh)
@@ -49,7 +50,7 @@ public class OperationGETXATTRTest {
 
         COMPOUND4res res = execute(context, getxattrArgs);
         verify(vfs).getXattr(inode, key);
-        assertArrayEquals(expectedValue, res.resarray.get(1).opgetxattr.gxr_value.value);
+        assertEquals(expectedValue, res.resarray.get(1).opgetxattr.gxr_value.value);
 
     }
 }

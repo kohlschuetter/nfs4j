@@ -22,13 +22,14 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class fs_locations_server4 implements XdrAble {
     public int32_t fls_currency;
-    public byte[] fls_info;
+    public Opaque fls_info;
     public utf8str_cis fls_server;
 
     public fs_locations_server4() {

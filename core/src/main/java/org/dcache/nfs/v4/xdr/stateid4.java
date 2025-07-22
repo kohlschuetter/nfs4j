@@ -21,29 +21,25 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 
 import org.dcache.nfs.vfs.OpenHandle;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
-import org.dcache.oncrpc4j.util.Bytes;
 import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
-
-import com.google.common.io.BaseEncoding;
 
 public class stateid4 implements XdrAble, Serializable, OpenHandle {
 
     static final long serialVersionUID = -6677150504723505919L;
 
     public int seqid;
-    public byte[] other;
+    public Opaque other;
 
     public stateid4() {
     }
 
-    public stateid4(byte[] other, int seq) {
+    public stateid4(Opaque other, int seq) {
         this.other = other;
         seqid = seq;
     }
@@ -75,7 +71,7 @@ public class stateid4 implements XdrAble, Serializable, OpenHandle {
 
         final stateid4 other_id = (stateid4) obj;
 
-        return Arrays.equals(this.other, other_id.other);
+        return this.other.equals(other_id.other);
     }
 
     /**
@@ -90,12 +86,12 @@ public class stateid4 implements XdrAble, Serializable, OpenHandle {
             return true;
         }
 
-        return otherState.seqid == this.seqid && Arrays.equals(this.other, otherState.other);
+        return otherState.seqid == this.seqid && this.other.equals(otherState.other);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(other);
+        return other.hashCode();
     }
 
     @Override
@@ -105,12 +101,12 @@ public class stateid4 implements XdrAble, Serializable, OpenHandle {
 
     @Override
     public long getClientId() {
-        return Bytes.getLong(other, 0);
+        return other.longAt(0);
     }
 
     @Override
     public Opaque getOpaque() {
-        return Opaque.forMutableByteArray(other);
+        return other;
     }
 
     @Override
@@ -118,7 +114,7 @@ public class stateid4 implements XdrAble, Serializable, OpenHandle {
         StringBuilder sb = new StringBuilder();
 
         sb.append("[");
-        sb.append(BaseEncoding.base16().lowerCase().encode(other));
+        sb.append(other.toString());
         sb.append(", seq: ").append(seqid).append("]");
         return sb.toString();
     }

@@ -1,11 +1,13 @@
 package org.dcache.nfs.vfs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +24,7 @@ public class DirectoryStreamTest {
     public void setUp() {
 
         NavigableSet<DirectoryEntry> entries = new TreeSet<>();
-        byte[] verifier = verifier4.valueOf(System.currentTimeMillis()).value;
+        Opaque verifier = verifier4.valueOf(System.currentTimeMillis()).value;
 
         for (int i = 0; i < 10; i++) {
             Inode inode = Inode.forFile(Ints.toByteArray(i));
@@ -50,14 +52,14 @@ public class DirectoryStreamTest {
     public void testTail() {
         DirectoryStream tail = stream.tail(3);
         assertEquals(tail.iterator().next().getCookie(), 4);
-        assertArrayEquals(stream.getVerifier(), tail.getVerifier());
+        assertEquals(stream.getVerifier(), tail.getVerifier());
     }
 
     @Test
     public void testTransform() {
         DirectoryStream transformed = stream.transform(d -> new DirectoryEntry(d.getName().toUpperCase(), d.getInode(),
                 d.getStat(), d.getCookie()));
-        assertArrayEquals(stream.getVerifier(), transformed.getVerifier());
+        assertEquals(stream.getVerifier(), transformed.getVerifier());
         for (DirectoryEntry e : transformed) {
             assertTrue(e.getName().startsWith("FILE"));
         }
@@ -93,7 +95,7 @@ public class DirectoryStreamTest {
                 .transform(d -> new DirectoryEntry(d.getName().toUpperCase(), d.getInode(), d.getStat(), d.getCookie()))
                 .transform(d -> new DirectoryEntry("a" + d.getName(), d.getInode(), d.getStat(), d.getCookie()));
 
-        assertArrayEquals(stream.getVerifier(), transformed.getVerifier());
+        assertEquals(stream.getVerifier(), transformed.getVerifier());
         for (DirectoryEntry e : transformed) {
             assertTrue(e.getName().startsWith("aFILE"));
         }

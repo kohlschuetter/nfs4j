@@ -31,6 +31,7 @@ import org.dcache.nfs.v4.xdr.nfs_opnum4;
 import org.dcache.nfs.v4.xdr.nfsv4_1_file_layout_ds_addr4;
 import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 
@@ -45,7 +46,7 @@ public class GetDeviceListStub {
         op.opgetdevicelist.gdla_cookie = new nfs_cookie4(0);
 
         op.opgetdevicelist.gdla_cookieverf = new verifier4();
-        op.opgetdevicelist.gdla_cookieverf.value = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
+        op.opgetdevicelist.gdla_cookieverf.value = Opaque.forNZeroBytes(nfs4_prot.NFS4_VERIFIER_SIZE);
 
         op.opgetdevicelist.gdla_layout_type = layouttype4.LAYOUT4_NFSV4_1_FILES.getValue();
 
@@ -54,7 +55,7 @@ public class GetDeviceListStub {
         return op;
     }
 
-    public static nfsv4_1_file_layout_ds_addr4 decodeFileDevice(byte[] data)
+    public static nfsv4_1_file_layout_ds_addr4 decodeFileDevice(Opaque data)
             throws OncRpcException, IOException {
         XdrDecodingStream xdr = new Xdr(data);
 

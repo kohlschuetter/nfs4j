@@ -104,6 +104,7 @@ import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.Stat.StatAttribute;
 import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.slf4j.Logger;
@@ -139,7 +140,7 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
          */
         bitmap4 processedAttributes = new bitmap4(new int[0]);
 
-        byte[] retBytes;
+        Opaque retBytes;
         try (Xdr xdr = new Xdr(1024)) {
             xdr.beginEncoding();
 
@@ -156,7 +157,7 @@ public class OperationGETATTR extends AbstractNFSv4Operation {
             }
 
             xdr.endEncoding();
-            retBytes = xdr.getBytes();
+            retBytes = xdr.toOpaque();
         }
 
         fattr4 attributes = new fattr4();

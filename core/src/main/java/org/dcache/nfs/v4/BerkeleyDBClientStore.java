@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import org.dcache.nfs.status.NoGraceException;
 import org.dcache.nfs.status.ReclaimBadException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,15 +154,17 @@ public class BerkeleyDBClientStore implements ClientRecoveryStore {
      * @param client client's unique identifier.
      */
     @Override
-    public synchronized void addClient(byte[] client) {
+    public synchronized void addClient(Opaque client) {
         Instant now = Instant.now();
 
-        DatabaseEntry key = new DatabaseEntry(client);
+        byte[] clientBytes = client.toBytes();
+
+        DatabaseEntry key = new DatabaseEntry(clientBytes);
         DatabaseEntry data = new DatabaseEntry();
 
         LongBinding.longToEntry(now.toEpochMilli(), data);
 
-        LOGGER.debug("New client record [{}] at {}", new String(client, UTF_8), now);
+        LOGGER.debug("New client record [{}] at {}", new String(clientBytes, UTF_8), now);
         clientDatabase.put(null, key, data);
     }
 
@@ -172,8 +175,8 @@ public class BerkeleyDBClientStore implements ClientRecoveryStore {
      * @param client client's unique identifier.
      */
     @Override
-    public synchronized void removeClient(byte[] client) {
-        DatabaseEntry key = new DatabaseEntry(client);
+    public synchronized void removeClient(Opaque client) {
+        DatabaseEntry key = new DatabaseEntry(client.toBytes());
         clientDatabase.delete(null, key);
         if (clientRecoveryDatabase != null) {
             clientRecoveryDatabase.delete(null, key);
@@ -187,15 +190,16 @@ public class BerkeleyDBClientStore implements ClientRecoveryStore {
      * @param client client's unique identifier.
      */
     @Override
-    public synchronized void reclaimClient(byte[] client) {
+    public synchronized void reclaimClient(Opaque client) {
 
         if (clientRecoveryDatabase == null) {
             return;
         }
 
-        DatabaseEntry key = new DatabaseEntry(client);
+        byte[] clientBytes = client.toBytes();
+        DatabaseEntry key = new DatabaseEntry(clientBytes);
 
-        LOGGER.debug("Removing recovery record for client [{}]", new String(client, UTF_8));
+        LOGGER.debug("Removing recovery record for client [{}]", new String(clientBytes, UTF_8));
         clientRecoveryDatabase.delete(null, key);
 
         // do lazy cleanup
@@ -214,19 +218,20 @@ public class BerkeleyDBClientStore implements ClientRecoveryStore {
      * @throws ReclaimBadException client's prevision state can't be detected.
      */
     @Override
-    public synchronized void wantReclaim(byte[] client) throws NoGraceException, ReclaimBadException {
+    public synchronized void wantReclaim(Opaque client) throws NoGraceException, ReclaimBadException {
 
         if (clientRecoveryDatabase == null) {
             throw new NoGraceException("Grace period expired");
         }
 
-        DatabaseEntry key = new DatabaseEntry(client);
+        byte[] clientBytes = client.toBytes();
+        DatabaseEntry key = new DatabaseEntry(clientBytes);
         DatabaseEntry data = new DatabaseEntry();
 
-        LOGGER.debug("Removing recovery record for client [{}]", new String(client, UTF_8));
+        LOGGER.debug("Removing recovery record for client [{}]", new String(clientBytes, UTF_8));
         OperationStatus status = clientRecoveryDatabase.get(null, key, data, LockMode.READ_COMMITTED);
         if (status != OperationStatus.SUCCESS) {
-            LOGGER.debug("No record for client [{}]", new String(client, UTF_8));
+            LOGGER.debug("No record for client [{}]", new String(clientBytes, UTF_8));
             throw new ReclaimBadException("No pre-reboot record found");
         }
 

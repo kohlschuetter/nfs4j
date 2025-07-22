@@ -19,18 +19,18 @@
  */
 package org.dcache.nfs.vfs;
 
-import static org.dcache.nfs.util.UnixSubjects.*;
+import static org.dcache.nfs.util.UnixSubjects.toSubject;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import javax.security.auth.Subject;
@@ -48,6 +48,7 @@ import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.RpcTransport;
 import org.dcache.oncrpc4j.rpc.gss.RpcAuthGss;
 import org.dcache.oncrpc4j.rpc.gss.RpcGssService;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -458,7 +459,7 @@ public class PseudoFsTest {
         Subject subject = toSubject(1, 17);
         Inode parent = vfs.mkdir(fsRoot, "dir", subject, 0755);
         Inode file = vfs.create(parent, Stat.Type.REGULAR, "aFile", subject, 0600);
-        vfs.setXattr(file, "xattr1", "value1".getBytes(StandardCharsets.UTF_8),
+        vfs.setXattr(file, "xattr1", Opaque.forUtf8Bytes("value1"),
                 VirtualFileSystem.SetXattrMode.CREATE);
         FsExport export = new FsExport.FsExportBuilder()
                 .ro()
@@ -665,7 +666,7 @@ public class PseudoFsTest {
         Inode dir = pseudoFs.lookup(pseudoRoot, "dir");
         Inode inode = pseudoFs.lookup(dir, "aFile");
 
-        pseudoFs.setXattr(inode, "xattr1", "value1".getBytes(StandardCharsets.UTF_8),
+        pseudoFs.setXattr(inode, "xattr1", Opaque.forUtf8Bytes("value1"),
                 VirtualFileSystem.SetXattrMode.CREATE);
     }
 
@@ -697,7 +698,7 @@ public class PseudoFsTest {
         Inode pseudoRoot = pseudoFs.getRootInode();
         Inode dir = pseudoFs.lookup(pseudoRoot, "dir");
         Inode inode = pseudoFs.lookup(dir, "aFile");
-        pseudoFs.setXattr(inode, "xattr1", "value1".getBytes(StandardCharsets.UTF_8),
+        pseudoFs.setXattr(inode, "xattr1", Opaque.forUtf8Bytes("value1"),
                 VirtualFileSystem.SetXattrMode.CREATE);
     }
 

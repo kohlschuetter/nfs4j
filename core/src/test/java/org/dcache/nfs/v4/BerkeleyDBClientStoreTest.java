@@ -1,8 +1,7 @@
 package org.dcache.nfs.v4;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,6 +9,7 @@ import java.nio.file.Path;
 
 import org.dcache.nfs.status.NoGraceException;
 import org.dcache.nfs.status.ReclaimBadException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class BerkeleyDBClientStoreTest {
     @Test
     public void shouldWaitForClientsAfterRestart() throws Exception {
         givenServer();
-        clientRecoveryStore.addClient("client1".getBytes(UTF_8));
+        clientRecoveryStore.addClient(Opaque.forUtf8Bytes("client1"));
         reboot();
 
         assertTrue(clientRecoveryStore.waitingForReclaim());
@@ -65,32 +65,32 @@ public class BerkeleyDBClientStoreTest {
     @Test(expected = ReclaimBadException.class)
     public void shouldFailWhenNewClientWantReclaim() throws Exception {
         givenServer();
-        clientRecoveryStore.addClient("client1".getBytes(UTF_8));
-        clientRecoveryStore.wantReclaim("client1".getBytes(UTF_8));
+        clientRecoveryStore.addClient(Opaque.forUtf8Bytes("client1"));
+        clientRecoveryStore.wantReclaim(Opaque.forUtf8Bytes("client1"));
     }
 
     @Test
     public void shouldReclaimAfterReboot() throws Exception {
         givenServer();
-        clientRecoveryStore.addClient("client1".getBytes(UTF_8));
+        clientRecoveryStore.addClient(Opaque.forUtf8Bytes("client1"));
         reboot();
-        clientRecoveryStore.addClient("client1".getBytes(UTF_8));
-        clientRecoveryStore.wantReclaim("client1".getBytes(UTF_8));
+        clientRecoveryStore.addClient(Opaque.forUtf8Bytes("client1"));
+        clientRecoveryStore.wantReclaim(Opaque.forUtf8Bytes("client1"));
     }
 
     @Test(expected = ReclaimBadException.class)
     public void shouldFailReclaimAfterRemove() throws Exception {
         givenServer();
-        clientRecoveryStore.addClient("client1".getBytes(UTF_8));
-        clientRecoveryStore.removeClient("client1".getBytes(UTF_8));
-        clientRecoveryStore.wantReclaim("client1".getBytes(UTF_8));
+        clientRecoveryStore.addClient(Opaque.forUtf8Bytes("client1"));
+        clientRecoveryStore.removeClient(Opaque.forUtf8Bytes("client1"));
+        clientRecoveryStore.wantReclaim(Opaque.forUtf8Bytes("client1"));
     }
 
     @Test(expected = NoGraceException.class)
     public void shouldFailOnLateReclaim() throws Exception {
         givenServer();
         clientRecoveryStore.reclaimComplete();
-        clientRecoveryStore.wantReclaim("client1".getBytes(UTF_8));
+        clientRecoveryStore.wantReclaim(Opaque.forUtf8Bytes("client1"));
     }
 
     private void givenServer() {

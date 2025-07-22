@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.nio.charset.StandardCharsets;
 import java.util.OptionalLong;
 
 import org.dcache.nfs.status.BadLayoutException;
@@ -22,9 +21,9 @@ import org.dcache.nfs.v4.xdr.COMPOUND4res;
 import org.dcache.nfs.v4.xdr.layouttype4;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.v4.xdr.seqid4;
-import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class OperationLAYOUTCOMMITTest {
         dm = mock(NFSv41DeviceManager.class);
         client = createClient(sh);
         session = client.createSession(1, 8196, 8192, 128, 16);
-        stateOwner = client.getOrCreateOwner("client".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client"), new seqid4(0));
 
     }
 
@@ -56,14 +55,14 @@ public class OperationLAYOUTCOMMITTest {
     @Ignore
     public void testCommitOnReadLayout() throws Exception {
 
-        StateOwner stateOwner = client.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
         var openRecord = sh.getFileTracker().addOpen(client, stateOwner, inode, OPEN4_SHARE_ACCESS_READ, 0);
 
         COMPOUND4args layoutCommit = new CompoundBuilder()
                 .withSequence(false, session.id(), 0, 0, 1)
                 .withPutfh(fh)
                 .withLayoutcommit(0, 100, true, openRecord.openStateId(), OptionalLong.of(100),
-                        layouttype4.LAYOUT4_FLEX_FILES, new byte[0])
+                        layouttype4.LAYOUT4_FLEX_FILES, Opaque.EMPTY_OPAQUE)
                 .build();
 
         CompoundContext context = new CompoundContextBuilder()
@@ -82,14 +81,14 @@ public class OperationLAYOUTCOMMITTest {
 
         when(dm.layoutCommit(any(), any())).thenReturn(OptionalLong.of(100));
 
-        StateOwner stateOwner = client.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
         var openRecord = sh.getFileTracker().addOpen(client, stateOwner, inode, OPEN4_SHARE_ACCESS_WRITE, 0);
 
         COMPOUND4args layoutCommit = new CompoundBuilder()
                 .withSequence(false, session.id(), 0, 0, 1)
                 .withPutfh(fh)
                 .withLayoutcommit(0, 100, true, openRecord.openStateId(), OptionalLong.of(100),
-                        layouttype4.LAYOUT4_FLEX_FILES, new byte[0])
+                        layouttype4.LAYOUT4_FLEX_FILES, Opaque.EMPTY_OPAQUE)
                 .build();
 
         CompoundContext context = new CompoundContextBuilder()
@@ -112,14 +111,14 @@ public class OperationLAYOUTCOMMITTest {
 
         when(dm.layoutCommit(any(), any())).thenReturn(OptionalLong.empty());
 
-        StateOwner stateOwner = client.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
         var openRecord = sh.getFileTracker().addOpen(client, stateOwner, inode, OPEN4_SHARE_ACCESS_WRITE, 0);
 
         COMPOUND4args layoutCommit = new CompoundBuilder()
                 .withSequence(false, session.id(), 0, 0, 1)
                 .withPutfh(fh)
                 .withLayoutcommit(0, 100, true, openRecord.openStateId(), OptionalLong.of(100),
-                        layouttype4.LAYOUT4_FLEX_FILES, new byte[0])
+                        layouttype4.LAYOUT4_FLEX_FILES, Opaque.EMPTY_OPAQUE)
                 .build();
 
         CompoundContext context = new CompoundContextBuilder()
@@ -143,7 +142,7 @@ public class OperationLAYOUTCOMMITTest {
                 .withSequence(false, session.id(), 0, 0, 1)
                 .withPutfh(fh)
                 .withLayoutcommit(0, 100, true, openRecord.openStateId(), OptionalLong.of(100),
-                        layouttype4.LAYOUT4_FLEX_FILES, new byte[0])
+                        layouttype4.LAYOUT4_FLEX_FILES, Opaque.EMPTY_OPAQUE)
                 .build();
 
         CompoundContext context = new CompoundContextBuilder()

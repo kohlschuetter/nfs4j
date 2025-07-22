@@ -22,12 +22,13 @@ package org.dcache.nfs.v3.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class nfs_fh3 implements XdrAble {
-    public byte[] data;
+    public Opaque data;
 
     public nfs_fh3() {
     }

@@ -31,6 +31,7 @@ import org.dcache.nfs.v4.xdr.nfs_argop4;
 import org.dcache.nfs.v4.xdr.nfs_opnum4;
 import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class OperationSETCLIENTID extends AbstractNFSv4Operation {
         }
 
         verifier4 verifier = _args.opsetclientid.client.verifier;
-        final byte[] id = _args.opsetclientid.client.id;
+        final Opaque id = _args.opsetclientid.client.id;
         NFS4Client client = context.getStateHandler().clientByOwner(id);
 
 

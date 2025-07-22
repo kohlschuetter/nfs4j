@@ -1,12 +1,16 @@
 package org.dcache.nfs.v3;
 
 import static org.dcache.testutils.XdrHelper.calculateSize;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,11 +24,11 @@ import org.dcache.nfs.v3.xdr.cookieverf3;
 import org.dcache.nfs.v3.xdr.entry3;
 import org.dcache.nfs.vfs.DirectoryEntry;
 import org.dcache.nfs.vfs.DirectoryStream;
-import org.dcache.nfs.vfs.FileHandle;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.RpcCall;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.testutils.AssertXdr;
 import org.dcache.testutils.NfsV3Ops;
 import org.dcache.testutils.RpcCallBuilder;
@@ -67,7 +71,7 @@ public class NfsServerV3READDIR_3Test {
     @Test
     public void testReadDirWithNoResults() throws Exception {
 
-        byte[] cookieVerifier = cookieverf3.valueOf(0).value;
+        Opaque cookieVerifier = cookieverf3.valueOf(0).value;
 
         // vfs will return an empty list from the vfs for dir (technically legal)
         when(vfs.list(eq(dirInode), any(), anyLong())).thenReturn(new DirectoryStream(cookieVerifier, Collections
@@ -86,7 +90,7 @@ public class NfsServerV3READDIR_3Test {
 
     @Test
     public void testReadDirWithTinyLimit() throws Exception {
-        byte[] cookieVerifier = cookieverf3.valueOf(0).value;
+        Opaque cookieVerifier = cookieverf3.valueOf(0).value;
         // vfs will return only "." and ".." as contents, both leading to itself
         List<DirectoryEntry> dirContents = new ArrayList<>();
         dirContents.add(new DirectoryEntry(".", dirInode, dirStat, 1));
@@ -104,7 +108,7 @@ public class NfsServerV3READDIR_3Test {
     @Test
     public void testContinueReadingAfterEOF() throws Exception {
 
-        byte[] cookieVerifier = cookieverf3.valueOf(dirStat.getGeneration()).value;
+        Opaque cookieVerifier = cookieverf3.valueOf(dirStat.getGeneration()).value;
 
         // vfs will return only "." and ".." as contents, both leading to itself
         List<DirectoryEntry> dirContents = new ArrayList<>();
@@ -135,7 +139,7 @@ public class NfsServerV3READDIR_3Test {
     @Test
     public void testSemiValidVerifier() throws Exception {
 
-        byte[] cookieVerifier = cookieverf3.valueOf(dirStat.getGeneration()).value;
+        Opaque cookieVerifier = cookieverf3.valueOf(dirStat.getGeneration()).value;
 
         // vfs will return only "." and ".." as contents, both leading to itself
         List<DirectoryEntry> dirContents = new ArrayList<>();
@@ -157,7 +161,7 @@ public class NfsServerV3READDIR_3Test {
     @Test
     public void testEofIfLastEntryDoesNotFit() throws Exception {
 
-        byte[] cookieVerifier = DirectoryStream.ZERO_VERIFIER;
+        Opaque cookieVerifier = DirectoryStream.ZERO_VERIFIER;
 
         // vfs will return only "." and ".." as contents, both leading to itself
         List<DirectoryEntry> dirContents = new ArrayList<>();

@@ -19,21 +19,8 @@
  */
 package org.dcache.nfs.v4;
 
-import static org.dcache.nfs.v4.NFSv4Defaults.NFS4_IMPLEMENTATION_DOMAIN;
-import static org.dcache.nfs.v4.NFSv4Defaults.NFS4_IMPLEMENTATION_ID;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.net.URL;
-import java.security.CodeSource;
 import java.security.Principal;
-import java.security.ProtectionDomain;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.util.jar.Attributes;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.status.AccessException;
@@ -50,14 +37,12 @@ import org.dcache.nfs.v4.xdr.nfs_argop4;
 import org.dcache.nfs.v4.xdr.nfs_impl_id4;
 import org.dcache.nfs.v4.xdr.nfs_opnum4;
 import org.dcache.nfs.v4.xdr.nfs_resop4;
-import org.dcache.nfs.v4.xdr.nfstime4;
 import org.dcache.nfs.v4.xdr.sequenceid4;
 import org.dcache.nfs.v4.xdr.state_protect4_r;
 import org.dcache.nfs.v4.xdr.state_protect_how4;
 import org.dcache.nfs.v4.xdr.uint32_t;
-import org.dcache.nfs.v4.xdr.utf8str_cis;
-import org.dcache.nfs.v4.xdr.utf8str_cs;
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +81,7 @@ public class OperationEXCHANGE_ID extends AbstractNFSv4Operation {
          * String(impelemtation.nii_name.value.value) ); }
          */
 
-        final byte[] clientOwner = _args.opexchange_id.eia_clientowner.co_ownerid;
+        final Opaque clientOwner = _args.opexchange_id.eia_clientowner.co_ownerid;
 
         /*
          * check the state

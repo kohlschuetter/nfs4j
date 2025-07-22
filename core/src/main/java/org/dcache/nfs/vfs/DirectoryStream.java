@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 
 import org.dcache.nfs.v4.xdr.nfs4_prot;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.collect.ForwardingNavigableSet;
 
@@ -36,25 +37,35 @@ import com.google.common.collect.ForwardingNavigableSet;
 public class DirectoryStream implements Iterable<DirectoryEntry> {
 
     // v4 and v3 have the same verifier size
-    public final static byte[] ZERO_VERIFIER = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
+    public final static Opaque ZERO_VERIFIER = Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
 
-    private final byte[] verifier;
+    private final Opaque verifier;
     private final NavigableSet<DirectoryEntry> entries;
 
     public DirectoryStream(Collection<DirectoryEntry> entries) {
         this(ZERO_VERIFIER, new TreeSet<>(entries));
     }
 
+    @Deprecated
     public DirectoryStream(byte[] verifier, Collection<DirectoryEntry> entries) {
         this(verifier, new TreeSet<>(entries));
     }
 
+    @Deprecated
     public DirectoryStream(byte[] verifier, NavigableSet<DirectoryEntry> entries) {
+        this(Opaque.forBytes(verifier), entries);
+    }
+
+    public DirectoryStream(Opaque verifier, Collection<DirectoryEntry> entries) {
+        this(verifier, new TreeSet<>(entries));
+    }
+
+    public DirectoryStream(Opaque verifier, NavigableSet<DirectoryEntry> entries) {
         this.verifier = verifier;
         this.entries = Collections.unmodifiableNavigableSet(entries);
     }
 
-    public byte[] getVerifier() {
+    public Opaque getVerifier() {
         return verifier;
     }
 

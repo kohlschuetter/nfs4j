@@ -20,24 +20,21 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
-import com.google.common.io.BaseEncoding;
-
 public class nfs_fh4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public nfs_fh4() {
     }
 
-    public nfs_fh4(byte[] value) {
+    public nfs_fh4(Opaque value) {
         this.value = value;
     }
 
@@ -58,7 +55,7 @@ public class nfs_fh4 implements XdrAble {
 
     @Override
     public String toString() {
-        return BaseEncoding.base16().lowerCase().encode(value);
+        return value.toString();
     }
 
     @Override
@@ -66,12 +63,12 @@ public class nfs_fh4 implements XdrAble {
         if (o == null || getClass() != o.getClass())
             return false;
         nfs_fh4 nfsFh4 = (nfs_fh4) o;
-        return Arrays.equals(value, nfsFh4.value);
+        return value.equals(nfsFh4.value);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(value);
+        return value.hashCode();
     }
 }
 // End of nfs_fh4.java

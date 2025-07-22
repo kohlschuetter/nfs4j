@@ -22,7 +22,6 @@ package org.dcache.nfs.vfs;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -317,11 +316,11 @@ public class VfsCache extends ForwardingFileSystem {
     private static class InodeCacheEntry {
 
         private final Inode _inode;
-        private final byte[] _verifier;
+        private final Opaque _verifier;
 
-        public InodeCacheEntry(Inode inode, byte[] verifier) {
+        public InodeCacheEntry(Inode inode, Opaque verifier) {
             _inode = requireNonNull(inode);
-            _verifier = requireNonNull(verifier);
+            _verifier = requireNonNull(verifier).toImmutableOpaque();
         }
 
         @Override
@@ -338,12 +337,12 @@ public class VfsCache extends ForwardingFileSystem {
                 return false;
             }
             InodeCacheEntry other = (InodeCacheEntry) obj;
-            return _inode.equals(other._inode) && Arrays.equals(_verifier, other._verifier);
+            return _inode.equals(other._inode) && _verifier.equals(other._verifier);
         }
 
         @Override
         public int hashCode() {
-            return _inode.hashCode() ^ Arrays.hashCode(_verifier);
+            return _inode.hashCode() ^ _verifier.hashCode();
         }
     }
 
@@ -361,10 +360,10 @@ public class VfsCache extends ForwardingFileSystem {
     }
 
     @Override
-    public DirectoryStream list(Inode inode, byte[] verifier, long cookie) throws IOException {
+    public DirectoryStream list(Inode inode, Opaque verifier, long cookie) throws IOException {
 
         InodeCacheEntry cacheKey;
-        if (cookie == 0L && Arrays.equals(verifier, DirectoryStream.ZERO_VERIFIER)) {
+        if (cookie == 0L && verifier.equals(DirectoryStream.ZERO_VERIFIER)) {
             /*
              * Initial listing. Lets try cache first. Use the same key as if we had executed directory listing.
              */
@@ -391,7 +390,7 @@ public class VfsCache extends ForwardingFileSystem {
     }
 
     @Override
-    public void setXattr(Inode inode, String attr, byte[] value, SetXattrMode mode) throws IOException {
+    public void setXattr(Inode inode, String attr, Opaque value, SetXattrMode mode) throws IOException {
         _inner.setXattr(inode, attr, value, mode);
         invalidateStatCache(inode);
     }

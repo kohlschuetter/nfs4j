@@ -22,13 +22,14 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class server_owner4 implements XdrAble {
     public uint64_t so_minor_id;
-    public byte[] so_major_id;
+    public Opaque so_major_id;
 
     public server_owner4() {
     }

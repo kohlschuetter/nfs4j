@@ -22,6 +22,7 @@ package org.dcache.nfs.v3.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -31,7 +32,7 @@ public class WRITE3args implements XdrAble {
     public offset3 offset;
     public count3 count;
     public int stable;
-    public byte[] data;
+    public Opaque data;
 
     public WRITE3args() {
     }

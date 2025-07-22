@@ -35,6 +35,7 @@ import org.dcache.nfs.v4.xdr.nfs_cookie4;
 import org.dcache.nfs.v4.xdr.nfs_opnum4;
 import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,9 @@ public class OperationGETDEVICELIST extends AbstractNFSv4Operation {
     public OperationGETDEVICELIST(nfs_argop4 args) {
         super(args, nfs_opnum4.OP_GETDEVICELIST);
     }
+
+    private static final Opaque COOKIE_VERIFIER_DEFAULT = Opaque.forImmutableBytes(
+            new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
 
     @Override
     public void process(CompoundContext context, nfs_resop4 result) throws IOException {
@@ -71,7 +75,7 @@ public class OperationGETDEVICELIST extends AbstractNFSv4Operation {
 
         res.gdlr_resok4.gdlr_cookie = new nfs_cookie4(1);
         res.gdlr_resok4.gdlr_cookieverf = new verifier4();
-        res.gdlr_resok4.gdlr_cookieverf.value = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
+        res.gdlr_resok4.gdlr_cookieverf.value = COOKIE_VERIFIER_DEFAULT;
 
         List<deviceid4> deviceIDs = pnfsDeviceManager.getDeviceList(context, _args.opgetdevicelist);
 

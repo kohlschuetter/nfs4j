@@ -22,6 +22,7 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -32,7 +33,7 @@ public class EXCHANGE_ID4resok implements XdrAble {
     public uint32_t eir_flags;
     public state_protect4_r eir_state_protect;
     public server_owner4 eir_server_owner;
-    public byte[] eir_server_scope;
+    public Opaque eir_server_scope;
     public nfs_impl_id4[] eir_server_impl_id;
 
     public EXCHANGE_ID4resok() {

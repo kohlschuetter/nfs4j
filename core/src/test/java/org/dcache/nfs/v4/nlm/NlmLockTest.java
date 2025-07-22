@@ -1,14 +1,14 @@
 package org.dcache.nfs.v4.nlm;
 
-import static org.junit.Assert.*;
-
-import java.nio.charset.StandardCharsets;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.dcache.nfs.v4.StateOwner;
 import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.v4.xdr.nfs4_prot;
 import org.dcache.nfs.v4.xdr.nfs_lock_type4;
 import org.dcache.nfs.v4.xdr.state_owner4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,11 +23,11 @@ public class NlmLockTest {
     @Before
     public void setUp() {
         state_owner4 so1 = new state_owner4();
-        so1.owner = "lock_owner1".getBytes(StandardCharsets.UTF_8);
+        so1.owner = Opaque.forUtf8Bytes("lock_owner1");
         so1.clientid = new clientid4(1L);
 
         state_owner4 so2 = new state_owner4();
-        so2.owner = "lock_owner2".getBytes(StandardCharsets.UTF_8);
+        so2.owner = Opaque.forUtf8Bytes("lock_owner2");
         so2.clientid = new clientid4(2L);
 
         lo1 = new StateOwner(so1, 1);

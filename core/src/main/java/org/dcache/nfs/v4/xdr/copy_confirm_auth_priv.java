@@ -10,12 +10,14 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 
-import org.dcache.oncrpc4j.rpc.*;
-import org.dcache.oncrpc4j.rpc.net.*;
-import org.dcache.oncrpc4j.xdr.*;
+import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
+import org.dcache.oncrpc4j.xdr.XdrAble;
+import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
+import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class copy_confirm_auth_priv implements XdrAble {
-    public byte[] ccap_shared_secret_mic;
+    public Opaque ccap_shared_secret_mic;
     public utf8str_mixed ccap_username;
 
     public copy_confirm_auth_priv() {

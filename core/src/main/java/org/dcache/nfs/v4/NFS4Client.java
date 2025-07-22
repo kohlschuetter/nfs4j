@@ -25,7 +25,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,11 +54,6 @@ import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *  with great help of William A.(Andy) Adamson
- */
-import com.google.common.io.BaseEncoding;
-
 public class NFS4Client {
 
     private static final Logger _log = LoggerFactory.getLogger(NFS4Client.class);
@@ -86,7 +80,7 @@ public class NFS4Client {
     /**
      * Variable length string that uniquely defines the client.
      */
-    private final byte[] _ownerId;
+    private final Opaque _ownerId;
 
     /**
      * Client side generated verifier that is used to detect client reboots.
@@ -194,11 +188,11 @@ public class NFS4Client {
 
     public NFS4Client(NFSv4StateHandler stateHandler, clientid4 clientId, int minorVersion,
             InetSocketAddress clientAddress, InetSocketAddress localAddress,
-            byte[] ownerID, verifier4 verifier, Principal principal, Duration leaseTime, boolean calbackNeeded) {
+            Opaque ownerID, verifier4 verifier, Principal principal, Duration leaseTime, boolean calbackNeeded) {
 
         _stateHandler = stateHandler;
         _clock = _stateHandler.getClock();
-        _ownerId = Arrays.copyOf(ownerID, ownerID.length);
+        _ownerId = ownerID.toImmutableOpaque();
         _clientVerifier = verifier;
         _serverVerifier = verifier4.valueOf(System.currentTimeMillis());
         _principal = principal;
@@ -234,7 +228,7 @@ public class NFS4Client {
      *
      * @return client's unique identifier.
      */
-    public byte[] getOwnerId() {
+    public Opaque getOwnerId() {
         return _ownerId;
     }
 
@@ -285,8 +279,7 @@ public class NFS4Client {
         Instant curentTime = _clock.instant();
         var delta = Duration.between(_lastLeaseUpdate, curentTime);
         if (delta.compareTo(_leaseTime) > 0) {
-            throw new ExpiredException("lease time expired: (" + delta + "): " + BaseEncoding.base16().lowerCase()
-                    .encode(_ownerId) +
+            throw new ExpiredException("lease time expired: (" + delta + "): " + _ownerId.toBase64() +
                     " (" + _clientId + ").");
         }
         _lastLeaseUpdate = curentTime;
@@ -441,7 +434,7 @@ public class NFS4Client {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(_clientAddress).append(":")
-                .append(BaseEncoding.base16().lowerCase().encode(_ownerId))
+                .append(_ownerId.toBase64())
                 .append("@")
                 .append(_clientId)
                 .append(":v4.").append(getMinorVersion());
@@ -625,17 +618,17 @@ public class NFS4Client {
      * @return state owner
      * @throws BadSeqidException if sequence out of order.
      */
-    public synchronized StateOwner getOrCreateOwner(byte[] owner, seqid4 seq) throws BadSeqidException {
+    public synchronized StateOwner getOrCreateOwner(Opaque owner, seqid4 seq) throws BadSeqidException {
         StateOwner stateOwner;
         if (_minorVersion == 0) {
-            Opaque k = Opaque.forBytes(owner);
+            Opaque k = owner;
             stateOwner = _owners.get(k);
             if (stateOwner == null) {
                 state_owner4 so = new state_owner4();
                 so.clientid = _clientId;
                 so.owner = owner;
                 stateOwner = new StateOwner(so, seq.value);
-                _owners.put(k, stateOwner);
+                _owners.put(k.toImmutableOpaque(), stateOwner);
             } else {
                 stateOwner.acceptAsNextSequence(seq);
             }
@@ -654,9 +647,8 @@ public class NFS4Client {
      *
      * @param owner client unique state owner
      */
-    public synchronized void releaseOwner(byte[] owner) throws StaleClientidException {
-        Opaque k = Opaque.forBytes(owner);
-        StateOwner stateOwner = _owners.remove(k);
+    public synchronized void releaseOwner(Opaque owner) throws StaleClientidException {
+        StateOwner stateOwner = _owners.remove(owner);
         if (stateOwner == null) {
             throw new StaleClientidException();
         }

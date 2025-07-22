@@ -66,6 +66,7 @@ import org.dcache.oncrpc4j.rpc.RpcAuthTypeNone;
 import org.dcache.oncrpc4j.rpc.RpcAuthTypeUnix;
 import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.RpcTransport;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrVoid;
@@ -291,7 +292,7 @@ public class ClientCB {
             xdr.beginEncoding();
             deleteDevice.xdrEncode(xdr);
             xdr.endEncoding();
-            byte[] b = xdr.getBytes();
+            Opaque b = xdr.toOpaque();
 
             cbDeleteDeciveId.cnda_changes[0].notify_vals = new notifylist4(b);
         }

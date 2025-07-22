@@ -22,18 +22,19 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class sec_oid4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public sec_oid4() {
     }
 
-    public sec_oid4(byte[] value) {
+    public sec_oid4(Opaque value) {
         this.value = value;
     }
 

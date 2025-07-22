@@ -30,6 +30,7 @@ import org.dcache.nfs.v4.xdr.nfsv4_1_file_layout4;
 import org.dcache.nfs.v4.xdr.offset4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 
@@ -57,7 +58,7 @@ public class LayoutgetStub {
         return op;
     }
 
-    static public nfsv4_1_file_layout4 decodeLayoutId(byte[] data) throws OncRpcException, IOException {
+    static public nfsv4_1_file_layout4 decodeLayoutId(Opaque data) throws OncRpcException, IOException {
 
         XdrDecodingStream xdr = new Xdr(data);
         nfsv4_1_file_layout4 device = new nfsv4_1_file_layout4();

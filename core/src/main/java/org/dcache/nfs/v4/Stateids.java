@@ -24,6 +24,7 @@ import org.dcache.nfs.status.BadStateidException;
 import org.dcache.nfs.status.OldStateidException;
 import org.dcache.nfs.v4.xdr.nfs4_prot;
 import org.dcache.nfs.v4.xdr.stateid4;
+import org.dcache.oncrpc4j.util.Opaque;
 
 public class Stateids {
 
@@ -56,15 +57,16 @@ public class Stateids {
     }
 
     private final static stateid4 CURRENT_STATEID =
-            new stateid4(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 1);
+            new stateid4(Opaque.forImmutableBytes(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), 1);
     private final static stateid4 INVAL_STATEID =
-            new stateid4(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, nfs4_prot.NFS4_UINT32_MAX);
+            new stateid4(Opaque.forImmutableBytes(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}),
+                    nfs4_prot.NFS4_UINT32_MAX);
     private final static stateid4 ZERO_STATEID =
-            new stateid4(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0);
+            new stateid4(Opaque.forImmutableBytes(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), 0);
 
-    private final static stateid4 ONE_STATEID = new stateid4(new byte[] {
+    private final static stateid4 ONE_STATEID = new stateid4(Opaque.forImmutableBytes(new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, nfs4_prot.NFS4_UINT32_MAX);
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}), nfs4_prot.NFS4_UINT32_MAX);
 
     public static stateid4 uptodateOf(stateid4 stateid) {
         return new stateid4(stateid.other, 0);
@@ -114,37 +116,37 @@ public class Stateids {
     }
 
     public static void checkOpenStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != OPEN_STATE_ID) {
+        if (stateid.other.byteAt(11) != OPEN_STATE_ID) {
             throw new BadStateidException("Not an open stateid");
         }
     }
 
     public static void checkLockStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != LOCK_STATE_ID) {
+        if (stateid.other.byteAt(11) != LOCK_STATE_ID) {
             throw new BadStateidException("Not a lock stateid");
         }
     }
 
     public static void checkDelegationStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != DELEGATION_STATE_ID) {
+        if (stateid.other.byteAt(11) != DELEGATION_STATE_ID) {
             throw new BadStateidException("Not a delegation stateid");
         }
     }
 
     public static void checkDirDelegationStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != DIR_DELEGATION_STATE_ID) {
+        if (stateid.other.byteAt(11) != DIR_DELEGATION_STATE_ID) {
             throw new BadStateidException("Not a directory delegation stateid");
         }
     }
 
     public static void checkServerSiderCopyStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != SSC_STATE_ID) {
+        if (stateid.other.byteAt(11) != SSC_STATE_ID) {
             throw new BadStateidException("Not a server-side copy stateid");
         }
     }
 
     public static void checkLayoutStateid(stateid4 stateid) throws BadStateidException {
-        if (stateid.other[11] != LAYOUT_STATE_ID) {
+        if (stateid.other.byteAt(11) != LAYOUT_STATE_ID) {
             throw new BadStateidException("Not a layout stateid");
         }
     }

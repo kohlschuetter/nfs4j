@@ -21,7 +21,6 @@ package org.dcache.nfs.v4;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
@@ -111,6 +110,7 @@ import org.dcache.nfs.v4.xdr.utf8str_cs;
 import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.nfs.v4.xdr.xattrvalue4;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 
@@ -198,11 +198,11 @@ public class CompoundBuilder {
 
         op.opexchange_id.eia_client_impl_id[0].nii_date = releaseDate;
         op.opexchange_id.eia_clientowner = new client_owner4();
-        op.opexchange_id.eia_clientowner.co_ownerid = co_ownerid.getBytes(StandardCharsets.UTF_8);
+        op.opexchange_id.eia_clientowner.co_ownerid = Opaque.forUtf8Bytes(co_ownerid);
 
-        op.opexchange_id.eia_clientowner.co_verifier = new verifier4();
-        op.opexchange_id.eia_clientowner.co_verifier.value = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
-        Bytes.putLong(op.opexchange_id.eia_clientowner.co_verifier.value, 0, releaseDate.seconds);
+        op.opexchange_id.eia_clientowner.co_verifier = new verifier4(Opaque.forNZeroBytes(
+                nfs4_prot.NFS4_VERIFIER_SIZE));
+        Bytes.putLong(op.opexchange_id.eia_clientowner.co_verifier.value.toBytes(), 0, releaseDate.seconds);
 
         op.opexchange_id.eia_flags = new uint32_t(flags);
         op.opexchange_id.eia_state_protect = new state_protect4_a();
@@ -381,8 +381,7 @@ public class CompoundBuilder {
 
         op.opgetdevicelist.gdla_cookie = new nfs_cookie4(0);
 
-        op.opgetdevicelist.gdla_cookieverf = new verifier4();
-        op.opgetdevicelist.gdla_cookieverf.value = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
+        op.opgetdevicelist.gdla_cookieverf = new verifier4(Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
 
         op.opgetdevicelist.gdla_layout_type = layoutType.getValue();
         op.opgetdevicelist.gdla_maxdevices = new count4(256);
@@ -406,7 +405,7 @@ public class CompoundBuilder {
         return this;
     }
 
-    public CompoundBuilder withLayoutreturn(long offset, long len, byte[] body, stateid4 stateid) {
+    public CompoundBuilder withLayoutreturn(long offset, long len, Opaque body, stateid4 stateid) {
 
         nfs_argop4 op = new nfs_argop4();
         op.argop = nfs_opnum4.OP_LAYOUTRETURN;
@@ -450,7 +449,7 @@ public class CompoundBuilder {
 
         state_owner4 owner = new state_owner4();
         owner.clientid = clientid;
-        owner.owner = "JUnitChimera".getBytes(StandardCharsets.UTF_8);
+        owner.owner = Opaque.forUtf8Bytes("JUnitChimera");
         op.opopen.owner = new open_owner4(owner);
 
         if ((access & nfs4_prot.OPEN4_SHARE_ACCESS_WANT_DELEG_MASK) == 0) {
@@ -472,7 +471,7 @@ public class CompoundBuilder {
         attr.attrmask = bitmap4.of(nfs4_prot.FATTR4_SIZE, nfs4_prot.FATTR4_MODE);
 
         how.createattrs = attr;
-        how.createverf = new verifier4(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
+        how.createverf = new verifier4(Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
         how.mode = createmode4.GUARDED4;
 
         flag.how = how;
@@ -529,7 +528,7 @@ public class CompoundBuilder {
 
         state_owner4 owner = new state_owner4();
         owner.clientid = clientid;
-        owner.owner = "JUnitChimera".getBytes(StandardCharsets.UTF_8);
+        owner.owner = Opaque.forUtf8Bytes("JUnitChimera");
         op.opopen.owner = new open_owner4(owner);
 
         openflag4 flag = new openflag4();
@@ -611,7 +610,7 @@ public class CompoundBuilder {
 
     public CompoundBuilder withLayoutcommit(long offset, long length,
             boolean reclaim, stateid4 stateid, OptionalLong lastWriteOffset,
-            layouttype4 layoutType, byte[] body) {
+            layouttype4 layoutType, Opaque body) {
         nfs_argop4 op = new nfs_argop4();
         op.argop = nfs_opnum4.OP_LAYOUTCOMMIT;
         op.oplayoutcommit = new LAYOUTCOMMIT4args();
@@ -683,7 +682,7 @@ public class CompoundBuilder {
         return this;
     }
 
-    public CompoundBuilder withSetXattr(String name, byte[] value, int mode) {
+    public CompoundBuilder withSetXattr(String name, Opaque value, int mode) {
 
         nfs_argop4 op = new nfs_argop4();
         op.argop = nfs_opnum4.OP_SETXATTR;
@@ -747,7 +746,7 @@ public class CompoundBuilder {
         return compound4args;
     }
 
-    private static byte[] encodeAttrs(XdrAble... attrs) {
+    private static Opaque encodeAttrs(XdrAble... attrs) {
 
         try (Xdr xdr = new Xdr(1024)) {
 
@@ -758,7 +757,7 @@ public class CompoundBuilder {
             }
 
             xdr.endEncoding();
-            return xdr.getBytes();
+            return xdr.toOpaque();
         } catch (IOException never_happens) {
             // ignore
         }

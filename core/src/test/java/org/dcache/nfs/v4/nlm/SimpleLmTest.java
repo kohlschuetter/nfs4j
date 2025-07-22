@@ -23,8 +23,8 @@ public class SimpleLmTest {
     @Before
     public void setUp() throws Exception {
         nlm = new SimpleLm();
-        file1 = Opaque.forBytes("file1".getBytes(StandardCharsets.UTF_8));
-        file2 = Opaque.forBytes("file2".getBytes(StandardCharsets.UTF_8));
+        file1 = Opaque.forUtf8Bytes("file1");
+        file2 = Opaque.forUtf8Bytes("file2");
     }
 
     @Test
@@ -445,7 +445,7 @@ public class SimpleLmTest {
         LockBuilder withOwner(String owner) {
             state_owner4 so = new state_owner4();
 
-            so.owner = owner.getBytes(StandardCharsets.UTF_8);
+            so.owner = Opaque.forUtf8Bytes(owner);
             so.clientid = new clientid4(1);
             this.owner = new StateOwner(so, 1);
             return this;

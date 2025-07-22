@@ -20,22 +20,22 @@
 package org.dcache.nfs.v3.xdr;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class cookieverf3 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public cookieverf3() {
     }
 
-    public cookieverf3(byte[] value) {
+    public cookieverf3(Opaque value) {
         this.value = value;
     }
 
@@ -56,7 +56,7 @@ public class cookieverf3 implements XdrAble {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(value);
+        return value.hashCode();
     }
 
     @Override
@@ -68,13 +68,13 @@ public class cookieverf3 implements XdrAble {
         if (!(obj instanceof cookieverf3))
             return false;
 
-        return Arrays.equals(this.value, ((cookieverf3) obj).value);
+        return this.value.equals(((cookieverf3) obj).value);
     }
 
     public static cookieverf3 valueOf(long value) {
         byte[] bytes = new byte[nfs3_prot.NFS3_COOKIEVERFSIZE];
         Bytes.putLong(bytes, 0, value);
-        return new cookieverf3(bytes);
+        return new cookieverf3(Opaque.forImmutableBytes(bytes));
     }
 }
 // End of cookieverf3.java

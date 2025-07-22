@@ -46,6 +46,7 @@ import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.RpcAuthType;
 import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.net.InetSocketAddresses;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,16 +303,15 @@ public class CompoundContext {
             public server_owner4 getOwner() {
                 server_owner4 owner = new server_owner4();
                 owner.so_minor_id = new uint64_t(0);
-                owner.so_major_id = InetSocketAddresses.uaddrOf(_callInfo.getTransport()
-                        .getLocalSocketAddress())
-                        .getBytes(UTF_8);
+                owner.so_major_id = Opaque.forUtf8Bytes(InetSocketAddresses.uaddrOf(_callInfo.getTransport()
+                        .getLocalSocketAddress()));
 
                 return owner;
             }
 
             @Override
-            public byte[] getScope() {
-                return "".getBytes(UTF_8);
+            public Opaque getScope() {
+                return Opaque.EMPTY_OPAQUE;
             }
         };
     }

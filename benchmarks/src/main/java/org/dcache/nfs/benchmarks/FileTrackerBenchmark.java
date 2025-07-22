@@ -5,7 +5,6 @@ import static org.dcache.nfs.v4.xdr.nfs4_prot.OPEN4_SHARE_ACCESS_READ;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +17,7 @@ import org.dcache.nfs.v4.xdr.seqid4;
 import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -65,8 +65,7 @@ public class FileTrackerBenchmark {
     public NFS4Client fileTrackerHashMapTest(FileTrackerHolder fileTrackerHolder) throws Exception {
 
         NFS4Client client = createClient(fileTrackerHolder.getStateHandler());
-        StateOwner stateOwner = client.getOrCreateOwner(Thread.currentThread().getName().getBytes(
-                StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes(Thread.currentThread().getName()), new seqid4(0));
         Inode inode = generateFileHandle();
         fileTrackerHolder.getFileTracker().addOpen(client, stateOwner, inode, OPEN4_SHARE_ACCESS_READ, 0);
         fileTrackerHolder.getStateHandler().removeClient(client);
@@ -83,7 +82,7 @@ public class FileTrackerBenchmark {
         byte[] bootTime = new byte[8];
         ThreadLocalRandom.current().nextBytes(owner);
         Bytes.putLong(bootTime, 0, System.currentTimeMillis());
-        return stateHandler.createClient(address, address, minor, owner, new verifier4(bootTime), null, false);
+        return stateHandler.createClient(address, address, minor, Opaque.forImmutableBytes(owner), new verifier4(Opaque.forBytes(bootTime)), null, false);
     }
 
     public static Inode generateFileHandle() {

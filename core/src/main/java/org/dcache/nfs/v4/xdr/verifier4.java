@@ -20,24 +20,22 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
-import com.google.common.io.BaseEncoding;
-
 public class verifier4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public verifier4() {
     }
 
-    public verifier4(byte[] value) {
+    public verifier4(Opaque value) {
         this.value = value;
     }
 
@@ -58,7 +56,7 @@ public class verifier4 implements XdrAble {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(value);
+        return value.hashCode();
     }
 
     @Override
@@ -71,20 +69,20 @@ public class verifier4 implements XdrAble {
 
         verifier4 other = (verifier4) o;
 
-        return Arrays.equals(other.value, this.value);
+        return other.value.equals(this.value);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append('[').append(BaseEncoding.base16().lowerCase().encode(value)).append(']');
+        sb.append('[').append(value.toString()).append(']');
         return sb.toString();
     }
 
     public static verifier4 valueOf(long value) {
         byte[] bytes = new byte[nfs4_prot.NFS4_VERIFIER_SIZE];
         Bytes.putLong(bytes, 0, value);
-        return new verifier4(bytes);
+        return new verifier4(Opaque.forImmutableBytes(bytes));
     }
 }
 // End of verifier4.java

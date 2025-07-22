@@ -20,6 +20,7 @@
 package org.dcache.nfs.v4;
 
 import org.dcache.nfs.v4.xdr.server_owner4;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  * Interface to provide server unique information used during EXCHANGE_ID operation.
@@ -34,5 +35,5 @@ public interface ServerIdProvider {
 
     server_owner4 getOwner();
 
-    byte[] getScope();
+    Opaque getScope();
 }

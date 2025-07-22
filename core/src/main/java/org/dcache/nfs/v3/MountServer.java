@@ -23,13 +23,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.ExportTable;
 import org.dcache.nfs.FsExport;
-import org.dcache.nfs.status.*;
+import org.dcache.nfs.status.NotDirException;
+import org.dcache.nfs.status.PermException;
 import org.dcache.nfs.v3.xdr.dirpath;
 import org.dcache.nfs.v3.xdr.exportnode;
 import org.dcache.nfs.v3.xdr.exports;
@@ -50,6 +52,7 @@ import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.RpcAuthType;
 import org.dcache.oncrpc4j.rpc.RpcCall;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +123,7 @@ public class MountServer extends mount_protServerStub {
                 throw new NotDirException("Path is not a directory");
             }
 
-            byte[] b = PseudoFs.pseudoIdToReal(rootInode, export.getIndex()).toNfsHandle();
+            Opaque  b = PseudoFs.pseudoIdToReal(rootInode, export.getIndex()).toNfsHandle();
 
             m.fhs_status = mountstat3.MNT3_OK;
             m.mountinfo.fhandle = new fhandle3(b);

@@ -39,7 +39,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.status.BadStateidException;
@@ -49,6 +48,7 @@ import org.dcache.nfs.status.ShareDeniedException;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.v4.xdr.seqid4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -76,10 +76,10 @@ public class FileTrackerTest {
     public void shouldAllowNonConflictingOpens() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
-        Inode inode = Inode.forFile(fh.value);
+        Inode inode = Inode.forFileIdKey(fh.value);
 
         tracker.addOpen(client1, stateOwner1, inode, OPEN4_SHARE_ACCESS_READ, 0);
         tracker.addOpen(client1, stateOwner1, inode, OPEN4_SHARE_ACCESS_WRITE, 0);
@@ -92,10 +92,10 @@ public class FileTrackerTest {
     public void shouldReturnSameStateIdForSameClient() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
-        Inode inode = Inode.forFile(fh.value);
+        Inode inode = Inode.forFileIdKey(fh.value);
 
         var openRecord1 = tracker.addOpen(client1, stateOwner1, inode, OPEN4_SHARE_ACCESS_READ, 0);
         var openRecord2 = tracker.addOpen(client1, stateOwner1, inode, OPEN4_SHARE_ACCESS_WRITE, 0);
@@ -109,8 +109,8 @@ public class FileTrackerTest {
     public void shouldReturnDifferentStateIdForDifferentOwners() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
-        StateOwner stateOwner2 = client1.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
+        StateOwner stateOwner2 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -128,7 +128,7 @@ public class FileTrackerTest {
     public void shouldMergeAccessModesOnMultipleOpenes() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -146,7 +146,7 @@ public class FileTrackerTest {
     public void shouldChangeAccessModesAfterDowngrade() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -169,7 +169,7 @@ public class FileTrackerTest {
         openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(1);
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -186,7 +186,7 @@ public class FileTrackerTest {
         openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(1);
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -201,9 +201,9 @@ public class FileTrackerTest {
     @Test
     public void shouldReturnDifferentStateIdForDifferentClient() throws Exception {
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
         NFS4Client client2 = createClient(sh);
-        StateOwner stateOwner2 = client1.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner2 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -222,7 +222,7 @@ public class FileTrackerTest {
         openCloseTracker.expectUponTeardownNumOpenAlreadyOpen(0);
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -235,7 +235,7 @@ public class FileTrackerTest {
     public void shouldAllowConflictingOpensAfterRemove() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -254,7 +254,7 @@ public class FileTrackerTest {
     public void shouldFailToGetAccessModeWithBadStateid() throws Exception {
 
         NFS4Client client1 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -273,7 +273,7 @@ public class FileTrackerTest {
         ClientCB mockCallBack = mock(ClientCB.class);
         client.setCB(mockCallBack);
 
-        StateOwner stateOwner1 = client.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -293,7 +293,7 @@ public class FileTrackerTest {
         ClientCB mockCallBack = mock(ClientCB.class);
         client.setCB(mockCallBack);
 
-        StateOwner stateOwner1 = client.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -311,8 +311,8 @@ public class FileTrackerTest {
         NFS4Client client1 = createClient(sh);
         NFS4Client client2 = createClient(sh);
 
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
-        StateOwner stateOwner2 = client2.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
+        StateOwner stateOwner2 = client2.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -339,8 +339,8 @@ public class FileTrackerTest {
         NFS4Client client1 = createClient(sh);
         NFS4Client client2 = createClient(sh);
 
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
-        StateOwner stateOwner2 = client2.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
+        StateOwner stateOwner2 = client2.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -360,7 +360,7 @@ public class FileTrackerTest {
     public void shouldIssueReadDelegationOnMultipleOpens() throws Exception {
 
         NFS4Client client = createClient(sh);
-        StateOwner stateOwner = client.getOrCreateOwner("client".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -379,7 +379,7 @@ public class FileTrackerTest {
     public void shouldNotIssueReadDelegation() throws Exception {
 
         NFS4Client client = createClient(sh);
-        StateOwner stateOwner = client.getOrCreateOwner("client".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner = client.getOrCreateOwner(Opaque.forUtf8Bytes("client"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -401,8 +401,8 @@ public class FileTrackerTest {
 
         NFS4Client client1 = createClient(sh);
         NFS4Client client2 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
-        StateOwner stateOwner2 = client2.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
+        StateOwner stateOwner2 = client2.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);
@@ -426,8 +426,8 @@ public class FileTrackerTest {
 
         NFS4Client client1 = createClient(sh);
         NFS4Client client2 = createClient(sh);
-        StateOwner stateOwner1 = client1.getOrCreateOwner("client1".getBytes(StandardCharsets.UTF_8), new seqid4(0));
-        StateOwner stateOwner2 = client2.getOrCreateOwner("client2".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        StateOwner stateOwner1 = client1.getOrCreateOwner(Opaque.forUtf8Bytes("client1"), new seqid4(0));
+        StateOwner stateOwner2 = client2.getOrCreateOwner(Opaque.forUtf8Bytes("client2"), new seqid4(0));
 
         nfs_fh4 fh = generateFileHandle();
         Inode inode = Inode.forFile(fh.value);

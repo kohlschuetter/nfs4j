@@ -1,6 +1,5 @@
 package org.dcache.nfs.benchmarks;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +12,14 @@ import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.v4.xdr.nfs_lock_type4;
 import org.dcache.nfs.v4.xdr.state_owner4;
 import org.dcache.oncrpc4j.util.Opaque;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 
 @BenchmarkMode(Mode.Throughput)
 public class ConcurrentLockManagerBenchmark {
@@ -81,7 +87,7 @@ public class ConcurrentLockManagerBenchmark {
         LockBuilder withOwner(String owner) {
             state_owner4 so = new state_owner4();
 
-            so.owner = owner.getBytes(StandardCharsets.UTF_8);
+            so.owner =  Opaque.forUtf8Bytes(owner);
             so.clientid = new clientid4(1);
             this.owner = new StateOwner(so, 1);
             return this;

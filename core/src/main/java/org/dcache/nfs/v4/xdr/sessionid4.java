@@ -20,23 +20,21 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
-import com.google.common.io.BaseEncoding;
-
 public class sessionid4 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public sessionid4() {
     }
 
-    public sessionid4(byte[] value) {
+    public sessionid4(Opaque value) {
         this.value = value;
     }
 
@@ -64,19 +62,19 @@ public class sessionid4 implements XdrAble {
 
         final sessionid4 other = (sessionid4) obj;
 
-        return Arrays.equals(this.value, other.value);
+        return this.value.equals(other.value);
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Arrays.hashCode(this.value);
+        hash = 23 * hash + this.value.hashCode();
         return hash;
     }
 
     @Override
     public String toString() {
-        return BaseEncoding.base16().lowerCase().encode(value);
+        return value.toString();
     }
 }
 // End of sessionid4.java

@@ -22,18 +22,19 @@ package org.dcache.nfs.v3.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class createverf3 implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public createverf3() {
     }
 
-    public createverf3(byte[] value) {
+    public createverf3(Opaque value) {
         this.value = value;
     }
 

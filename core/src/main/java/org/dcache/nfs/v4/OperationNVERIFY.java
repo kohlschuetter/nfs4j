@@ -61,9 +61,9 @@ public class OperationNVERIFY extends AbstractNFSv4Operation {
 
         res.status = nfsstat.NFSERR_SAME;
 
-        for (int i = 0; i < _args.opnverify.obj_attributes.attr_vals.value.length; i++) {
+        for (int i = 0, n = _args.opnverify.obj_attributes.attr_vals.value.numBytes(); i < n; i++) {
 
-            if (_args.opnverify.obj_attributes.attr_vals.value[i] != currentAttr.attr_vals.value[i]) {
+            if (_args.opnverify.obj_attributes.attr_vals.value.byteAt(i) != currentAttr.attr_vals.value.byteAt(i)) {
                 res.status = nfsstat.NFS_OK;
                 break;
             }

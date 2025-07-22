@@ -16,6 +16,7 @@ import org.dcache.nfs.v4.xdr.COMPOUND4res;
 import org.dcache.nfs.v4.xdr.device_addr4;
 import org.dcache.nfs.v4.xdr.deviceid4;
 import org.dcache.nfs.v4.xdr.layouttype4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Test;
 
 /**
@@ -36,7 +37,8 @@ public class OperationGETDEVICEINFOTest {
                 .build();
 
         COMPOUND4args gdiArgs = new CompoundBuilder()
-                .withGetdeviceinfo(new deviceid4(new byte[] {0x7}), layouttype4.LAYOUT4_NFSV4_1_FILES)
+                .withGetdeviceinfo(new deviceid4(Opaque.forImmutableBytes(new byte[] {0x7})),
+                        layouttype4.LAYOUT4_NFSV4_1_FILES)
                 .build();
 
         COMPOUND4res res = execute(context, gdiArgs);

@@ -10,13 +10,15 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 
-import org.dcache.oncrpc4j.rpc.*;
-import org.dcache.oncrpc4j.rpc.net.*;
-import org.dcache.oncrpc4j.xdr.*;
+import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
+import org.dcache.oncrpc4j.xdr.XdrAble;
+import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
+import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class data4 implements XdrAble {
     public offset4 d_offset;
-    public byte[] d_data;
+    public Opaque d_data;
 
     public data4() {
     }

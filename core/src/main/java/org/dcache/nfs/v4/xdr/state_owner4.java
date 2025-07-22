@@ -21,22 +21,21 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.io.BaseEncoding;
 
 public class state_owner4 implements XdrAble, Serializable {
 
     private static final long serialVersionUID = -7146149387990285155L;
     public clientid4 clientid;
-    public byte[] owner;
+    public Opaque owner;
 
     public state_owner4() {
     }
@@ -67,7 +66,7 @@ public class state_owner4 implements XdrAble, Serializable {
     public int hashCode() {
         int hash = 7;
         hash = 67 * hash + Objects.hashCode(this.clientid);
-        hash = 67 * hash + Arrays.hashCode(this.owner);
+        hash = 67 * hash + this.owner.hashCode();
         return hash;
     }
 
@@ -84,14 +83,14 @@ public class state_owner4 implements XdrAble, Serializable {
         }
         final state_owner4 other = (state_owner4) obj;
 
-        return this.clientid.value == other.clientid.value && Arrays.equals(this.owner, other.owner);
+        return this.clientid.value == other.clientid.value && this.owner.equals(other.owner);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this.getClass().getSimpleName())
                 .add("clientid", Long.toString(clientid.value, 16))
-                .add("ownerid", BaseEncoding.base16().lowerCase().encode(owner))
+                .add("ownerid", owner.toString())
                 .toString();
     }
 }

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import org.dcache.nfs.ChimeraNFSException;
@@ -36,6 +35,7 @@ import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.v4.xdr.seqid4;
 import org.dcache.nfs.v4.xdr.sessionid4;
 import org.dcache.nfs.v4.xdr.stateid4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class NFSv4StateHandlerTest {
     public void setUp() throws UnknownHostException, BadSeqidException {
         _stateHandler = new NFSv4StateHandler(new OpenCloseTrackerTester.ExpectNoCalls());
         _client = createClient(_stateHandler);
-        _owner = _client.getOrCreateOwner("client test".getBytes(StandardCharsets.UTF_8), new seqid4(0));
+        _owner = _client.getOrCreateOwner(Opaque.forUtf8Bytes("client test"), new seqid4(0));
     }
 
     @After
@@ -144,7 +144,7 @@ public class NFSv4StateHandlerTest {
 
     @Test(expected = BadStateidException.class)
     public void testGetClientByBadStateid() throws Exception {
-        stateid4 stateid = new stateid4(new byte[12], 1);
+        stateid4 stateid = new stateid4(Opaque.forNZeroBytes(12), 1);
 
         _stateHandler.getClientIdByStateId(stateid);
     }
@@ -158,7 +158,7 @@ public class NFSv4StateHandlerTest {
 
     @Test(expected = BadSessionException.class)
     public void testGetClientByBadSession() throws Exception {
-        sessionid4 sesssion = new sessionid4(new byte[12]);
+        sessionid4 sesssion = new sessionid4(Opaque.forNZeroBytes(12));
 
         _stateHandler.getClient(sesssion);
     }

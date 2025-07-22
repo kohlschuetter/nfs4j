@@ -33,6 +33,7 @@ import org.dcache.nfs.v4.NfsIdMapping;
 import org.dcache.nfs.v4.xdr.nfsace4;
 import org.dcache.nfs.v4.xdr.stable_how4;
 import org.dcache.nfs.vfs.Stat.StatAttribute;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.annotations.Beta;
 
@@ -131,7 +132,7 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @return DirectoryStream containing directory listing.
      * @throws IOException
      */
-    DirectoryStream list(Inode inode, byte[] verifier, long cookie) throws IOException;
+    DirectoryStream list(Inode inode, Opaque verifier, long cookie) throws IOException;
 
     /**
      * Generate a opaque directory verifier which is identified with can be used as identifier of directory's state
@@ -141,7 +142,7 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @return opaque verifier.
      * @throws IOException
      */
-    byte[] directoryVerifier(Inode inode) throws IOException;
+    Opaque directoryVerifier(Inode inode) throws IOException;
 
     /**
      * Create a new sub-directory in a given directory.
@@ -296,7 +297,6 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @deprecated instead use the
      *             {@code write(Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)}
      */
-    @Deprecated
     WriteResult write(Inode inode, byte[] data, long offset, int count, StabilityLevel stabilityLevel)
             throws IOException;
 
@@ -539,7 +539,7 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @return value of the attribute.
      * @throws IOException
      */
-    default byte[] getXattr(Inode inode, String attr) throws IOException {
+    default Opaque getXattr(Inode inode, String attr) throws IOException {
         throw new NotSuppException();
     }
 
@@ -552,7 +552,7 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @param mode the update mode
      * @throws IOException
      */
-    default void setXattr(Inode inode, String attr, byte[] value, SetXattrMode mode) throws IOException {
+    default void setXattr(Inode inode, String attr, Opaque value, SetXattrMode mode) throws IOException {
         throw new NotSuppException();
     }
 

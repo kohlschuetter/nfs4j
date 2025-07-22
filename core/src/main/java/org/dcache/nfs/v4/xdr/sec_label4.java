@@ -10,13 +10,15 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 
-import org.dcache.oncrpc4j.rpc.*;
-import org.dcache.oncrpc4j.rpc.net.*;
-import org.dcache.oncrpc4j.xdr.*;
+import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
+import org.dcache.oncrpc4j.xdr.XdrAble;
+import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
+import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class sec_label4 implements XdrAble {
     public labelformat_spec4 slai_lfs;
-    public byte[] slai_data;
+    public Opaque slai_data;
 
     public sec_label4() {
     }

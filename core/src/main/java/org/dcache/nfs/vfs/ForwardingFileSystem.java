@@ -30,6 +30,7 @@ import org.dcache.nfs.v4.NfsIdMapping;
 import org.dcache.nfs.v4.xdr.nfsace4;
 import org.dcache.nfs.vfs.Stat.Flag;
 import org.dcache.nfs.vfs.Stat.StatAttribute;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  * A file system which forwards all its method calls to another file system. Subclasses should override one or more
@@ -78,7 +79,7 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public DirectoryStream list(Inode inode, byte[] verifier, long cookie) throws IOException {
+    public DirectoryStream list(Inode inode, Opaque verifier, long cookie) throws IOException {
         return delegate().list(inode, verifier, cookie);
     }
 
@@ -201,17 +202,17 @@ public abstract class ForwardingFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public byte[] directoryVerifier(Inode inode) throws IOException {
+    public Opaque directoryVerifier(Inode inode) throws IOException {
         return delegate().directoryVerifier(inode);
     }
 
     @Override
-    public byte[] getXattr(Inode inode, String attr) throws IOException {
+    public Opaque getXattr(Inode inode, String attr) throws IOException {
         return delegate().getXattr(inode, attr);
     }
 
     @Override
-    public void setXattr(Inode inode, String attr, byte[] value, SetXattrMode mode) throws IOException {
+    public void setXattr(Inode inode, String attr, Opaque value, SetXattrMode mode) throws IOException {
         delegate().setXattr(inode, attr, value, mode);
     }
 

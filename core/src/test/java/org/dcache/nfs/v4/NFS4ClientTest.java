@@ -45,6 +45,7 @@ import org.dcache.nfs.v4.xdr.seqid4;
 import org.dcache.nfs.v4.xdr.state_owner4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ public class NFS4ClientTest {
                 new DefaultClientCache(leaseTime, new NopCacheEventListener<>()), clock);
 
         nfsClient = createClient(stateHandler);
-        owner = nfsClient.getOrCreateOwner("client test".getBytes(StandardCharsets.UTF_8),
+        owner = nfsClient.getOrCreateOwner(Opaque.forUtf8Bytes("client test"),
                 new seqid4(0));
     }
 
@@ -134,9 +135,9 @@ public class NFS4ClientTest {
 
         state_owner4 so = new state_owner4();
         so.clientid = nfsClient.getId();
-        so.owner = "someOtherOwner".getBytes(StandardCharsets.UTF_8);
+        so.owner = Opaque.forUtf8Bytes("someOtherOwner");
         StateOwner stateOwner = new StateOwner(so, 0);
-        NFS4State state = new NFS4State(stateOwner, new stateid4(new byte[] {}, 0));
+        NFS4State state = new NFS4State(stateOwner, new stateid4(Opaque.EMPTY_OPAQUE, 0));
 
         nfsClient.attachState(state);
         assertTrue(nfsClient.hasState());

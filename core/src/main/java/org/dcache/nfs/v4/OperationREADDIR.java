@@ -46,6 +46,7 @@ import org.dcache.nfs.vfs.DirectoryStream;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,8 +158,8 @@ public class OperationREADDIR extends AbstractNFSv4Operation {
             }
 
             // check if writing this entry exceeds the count limit
-            int newSize = ENTRY4_SIZE + name.length() + currentEntry.name.value.length
-                    + currentEntry.attrs.attr_vals.value.length;
+            int newSize = ENTRY4_SIZE + name.length() + currentEntry.name.value.numBytes()
+                    + currentEntry.attrs.attr_vals.value.numBytes();
             int newDirSize = name.length() + 4; // name + sizeof(long)
             if ((currcount + newSize > _args.opreaddir.maxcount.value) || (dircount
                     + newDirSize > _args.opreaddir.dircount.value)) {
@@ -194,7 +195,7 @@ public class OperationREADDIR extends AbstractNFSv4Operation {
     private fattr4 generateReaddirErrorAttribute(int status) {
         fattr4 attrs = new fattr4();
         attrs.attrmask = bitmap4.of(nfs4_prot.FATTR4_RDATTR_ERROR);
-        attrs.attr_vals = new attrlist4(Ints.toByteArray(status)); // java's big endian format matches xdr encoding
+        attrs.attr_vals = new attrlist4(Opaque.forImmutableBytes(Ints.toByteArray(status))); // java's big endian format matches xdr encoding
         return attrs;
     }
 }

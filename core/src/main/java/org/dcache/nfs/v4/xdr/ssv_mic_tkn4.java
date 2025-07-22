@@ -22,13 +22,14 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class ssv_mic_tkn4 implements XdrAble {
     public uint32_t smt_ssv_seq;
-    public byte[] smt_hmac;
+    public Opaque smt_hmac;
 
     public ssv_mic_tkn4() {
     }

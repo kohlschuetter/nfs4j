@@ -73,7 +73,7 @@ public class OperationVERIFY extends AbstractNFSv4Operation {
                 throw new AttrNotSuppException("check for not supported attribute");
             }
 
-            if (Arrays.equals(_args.opverify.obj_attributes.attr_vals.value, currentAttr.attr_vals.value)) {
+            if (_args.opverify.obj_attributes.attr_vals.value.equals(currentAttr.attr_vals.value)) {
                 res.status = nfsstat.NFS_OK;
             } else {
                 res.status = nfsstat.NFSERR_NOT_SAME;

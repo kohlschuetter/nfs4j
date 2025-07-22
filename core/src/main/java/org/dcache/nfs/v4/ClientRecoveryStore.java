@@ -23,6 +23,7 @@ import java.io.Closeable;
 
 import org.dcache.nfs.status.NoGraceException;
 import org.dcache.nfs.status.ReclaimBadException;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  * Interface to a store that keeps record of know client to allow opens and locks recovery after server reboot.
@@ -36,7 +37,7 @@ public interface ClientRecoveryStore extends Closeable {
      *
      * @param client client's unique identifier.
      */
-    void addClient(byte[] client);
+    void addClient(Opaque client);
 
     /**
      * Indicates that {@code owner} have finished reclaim procedure. This method is called by client even it there was
@@ -44,7 +45,7 @@ public interface ClientRecoveryStore extends Closeable {
      *
      * @param client client's unique identifier.
      */
-    void reclaimClient(byte[] client);
+    void reclaimClient(Opaque client);
 
     /**
      * Remove client record from recovery store. Called when client record is destroyed due to expiry or destroy
@@ -52,7 +53,7 @@ public interface ClientRecoveryStore extends Closeable {
      *
      * @param client client's unique identifier.
      */
-    void removeClient(byte[] client);
+    void removeClient(Opaque client);
 
     /**
      * Checks this client store for a pending reclaim. The does not expects any reclaims when grace period is expired or
@@ -70,7 +71,7 @@ public interface ClientRecoveryStore extends Closeable {
      * @throws NoGraceException is grace period is over
      * @throws ReclaimBadException client's prevision state can't be detected.
      */
-    void wantReclaim(byte[] client) throws NoGraceException, ReclaimBadException;
+    void wantReclaim(Opaque client) throws NoGraceException, ReclaimBadException;
 
     /**
      * Indicate the end of grace period. The records for client's that did not showed up during grace period will be

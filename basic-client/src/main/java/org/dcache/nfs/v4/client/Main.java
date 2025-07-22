@@ -79,6 +79,7 @@ import org.dcache.nfs.v4.xdr.verifier4;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
 import org.dcache.oncrpc4j.rpc.net.IpProtocolType;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -656,7 +657,7 @@ public class Main {
 
         _rootFh = compound4res.resarray.get(compound4res.resarray.size() - 1).opgetfh.resok4.object;
         _cwd = _rootFh;
-        System.out.println("root fh = " + BaseEncoding.base16().lowerCase().encode(_rootFh.value));
+        System.out.println("root fh = " + _rootFh.value.toString());
     }
 
     public void readdir() throws OncRpcException, IOException {
@@ -676,7 +677,7 @@ public class Main {
         boolean done;
         List<String> list = new ArrayList<>();
         long cookie = 0;
-        verifier4 verifier = new verifier4(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
+        verifier4 verifier = new verifier4(Opaque.forNZeroBytes(nfs4_prot.NFS4_VERIFIER_SIZE));
 
         do {
 
@@ -694,7 +695,7 @@ public class Main {
             entry4 dirEntry = compound4res.resarray.get(2).opreaddir.resok4.reply.entries;
             while (dirEntry != null) {
                 cookie = dirEntry.cookie.value;
-                list.add(new String(dirEntry.name.value));
+                list.add(dirEntry.name.toString());
                 dirEntry = dirEntry.nextentry;
             }
 
@@ -708,7 +709,7 @@ public class Main {
         boolean done;
         List<String> list = new ArrayList<>();
         long cookie = 0;
-        verifier4 verifier = new verifier4(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
+        verifier4 verifier = new verifier4(Opaque.forNZeroBytes(nfs4_prot.NFS4_VERIFIER_SIZE));
 
         do {
 
@@ -728,7 +729,7 @@ public class Main {
                     - 1).opreaddir.resok4.reply.entries;
             while (dirEntry != null) {
                 cookie = dirEntry.cookie.value;
-                list.add(new String(dirEntry.name.value));
+                list.add(dirEntry.name.toString());
                 dirEntry = dirEntry.nextentry;
             }
 
@@ -770,9 +771,8 @@ public class Main {
             fattr4_fs_locations locations = locationsAttr.get();
             System.out.println("fs_locations fs_root: " + locations.value.fs_root.value[0]);
             System.out.println("fs_locations locations rootpath: " + locations.value.locations[0].rootpath.value[0]);
-            System.out.println("fs_locations locations server: " + new String(
-                    locations.value.locations[0].server[0].value.value));
-
+            System.out.println("fs_locations locations server: "
+                + locations.value.locations[0].server[0].value.toString());
         }
     }
 
@@ -787,7 +787,7 @@ public class Main {
         COMPOUND4res compound4res = sendCompoundInSession(args);
 
         _cwd = compound4res.resarray.get(compound4res.resarray.size() - 1).opgetfh.resok4.object;
-        System.out.println("CWD fh = " + BaseEncoding.base16().lowerCase().encode(_cwd.value));
+        System.out.println("CWD fh = " + _cwd.value.toString());
         return new nfs_fh4(_cwd.value);
     }
 
@@ -833,7 +833,7 @@ public class Main {
 
             dsClient.nfsRead(stripe.getFh(), or.stateid());
 
-            layoutreturn(or.fh(), 0, -1, new byte[0], stripeMap.getStateid());
+            layoutreturn(or.fh(), 0, -1, Opaque.EMPTY_OPAQUE, stripeMap.getStateid());
 
         } else {
             nfsRead(or.fh(), or.stateid());
@@ -910,14 +910,14 @@ public class Main {
                     // offset points to current file size
                     if (stripe.isCommitThroughMDS()) {
                         layoutCommit(stripe.getFh(), or.stateid(), 0, offset,
-                                OptionalLong.of(offset - 1), new byte[0]);
+                                OptionalLong.of(offset - 1), Opaque.EMPTY_OPAQUE);
                     }
                 }
 
             } catch (IOException ie) {
                 System.out.println("Write failed: " + ie.getMessage());
             } finally {
-                layoutreturn(or.fh(), 0, -1, new byte[0], stripeMap.getStateid());
+                layoutreturn(or.fh(), 0, -1, Opaque.EMPTY_OPAQUE, stripeMap.getStateid());
             }
 
         } else {
@@ -942,7 +942,7 @@ public class Main {
 
         nfs_fh4 fh = compound4res.resarray.get(opCount - 1).opgetfh.resok4.object;
         stateid4 stateid = compound4res.resarray.get(opCount - 2).opopen.resok4.stateid;
-        System.out.println("open_read fh = " + BaseEncoding.base16().lowerCase().encode(fh.value));
+        System.out.println("open_read fh = " + fh.value.toString());
 
         return new OpenReply(fh, stateid);
     }
@@ -961,7 +961,7 @@ public class Main {
         int opCount = compound4res.resarray.size();
         nfs_fh4 fh = compound4res.resarray.get(opCount - 1).opgetfh.resok4.object;
         stateid4 stateid = compound4res.resarray.get(opCount - 2).opopen.resok4.stateid;
-        System.out.println("open_read fh = " + BaseEncoding.base16().lowerCase().encode(fh.value));
+        System.out.println("open_read fh = " + fh.value.toString());
 
         return new OpenReply(fh, stateid);
     }
@@ -990,7 +990,7 @@ public class Main {
         COMPOUND4res compound4res = sendCompoundInSession(args);
 
         layout4[] layout = compound4res.resarray.get(2).oplayoutget.logr_resok4.logr_layout;
-        System.out.println("Layoutget for fh: " + BaseEncoding.base16().lowerCase().encode(fh.value));
+        System.out.println("Layoutget for fh: " + fh.value.toString());
         System.out.println("    roc   : " + compound4res.resarray.get(2).oplayoutget.logr_resok4.logr_return_on_close);
 
         StripeMap stripeMap = new StripeMap(compound4res.resarray.get(2).oplayoutget.logr_resok4.logr_stateid);
@@ -998,11 +998,11 @@ public class Main {
         for (layout4 l : layout) {
             nfsv4_1_file_layout4 fileDevice = LayoutgetStub.decodeLayoutId(l.lo_content.loc_body);
             System.out.println("       sd # "
-                    + Arrays.toString(fileDevice.nfl_deviceid.value) + " size "
-                    + fileDevice.nfl_deviceid.value.length);
+                    + fileDevice.nfl_deviceid.value.toString() + " size "
+                    + fileDevice.nfl_deviceid.value.numBytes());
 
             _ioFH = fileDevice.nfl_fh_list[0];
-            System.out.println("     io fh: " + BaseEncoding.base16().lowerCase().encode(_ioFH.value));
+            System.out.println("     io fh: " + _ioFH.value.toString());
             System.out.println("    length: " + l.lo_length.value);
             System.out.println("    offset: " + l.lo_offset.value);
             System.out.println("    type  : " + l.lo_content.loc_type);
@@ -1036,7 +1036,7 @@ public class Main {
         return stripeMap;
     }
 
-    private void layoutreturn(nfs_fh4 fh, long offset, long len, byte[] body, stateid4 stateid) throws OncRpcException,
+    private void layoutreturn(nfs_fh4 fh, long offset, long len, Opaque body, stateid4 stateid) throws OncRpcException,
             IOException {
 
         COMPOUND4args args = new CompoundBuilder()
@@ -1049,7 +1049,7 @@ public class Main {
     }
 
     private void layoutCommit(nfs_fh4 fh, stateid4 stateid, long offset, long len,
-            OptionalLong newOffset, byte[] body) throws OncRpcException, IOException {
+            OptionalLong newOffset, Opaque body) throws OncRpcException, IOException {
 
         COMPOUND4args args = new CompoundBuilder()
                 .withPutfh(fh)
@@ -1209,7 +1209,7 @@ public class Main {
 
             System.out.println("Know devices: ");
             for (deviceid4 device : deviceList) {
-                System.out.println("      Device: # " + Arrays.toString(device.value));
+                System.out.println("      Device: # " + device.value.toString());
             }
         } catch (NotSuppException e) {
             // server does not supports deveice list
@@ -1306,16 +1306,16 @@ public class Main {
     private void lookup(String fh, String path) throws OncRpcException, IOException {
 
         COMPOUND4args args = new CompoundBuilder()
-                .withPutfh(new nfs_fh4(fh.getBytes()))
+                .withPutfh(new nfs_fh4(Opaque.forUtf8Bytes(fh)))
                 .withLookup(path)
                 .withGetfh()
                 .withTag("lookup-with-id")
                 .build();
 
         COMPOUND4res compound4res = sendCompoundInSession(args);
-        System.out.println("fh = " + BaseEncoding.base16().lowerCase().encode(compound4res.resarray.get(
-                compound4res.resarray.size() - 1).opgetfh.resok4.object.value));
-    }
+        System.out.println("fh = " + compound4res.resarray.get(compound4res.resarray.size()
+            - 1).opgetfh.resok4.object.value.toString());
+      }
 
     private void getattr(String path) throws OncRpcException, IOException {
 

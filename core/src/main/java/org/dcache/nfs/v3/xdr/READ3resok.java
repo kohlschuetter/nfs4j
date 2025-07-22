@@ -22,6 +22,7 @@ package org.dcache.nfs.v3.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -30,7 +31,7 @@ public class READ3resok implements XdrAble {
     public post_op_attr file_attributes;
     public count3 count;
     public boolean eof;
-    public byte[] data;
+    public Opaque data;
 
     public READ3resok() {
     }

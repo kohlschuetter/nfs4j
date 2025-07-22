@@ -145,7 +145,7 @@ public class OperationREADDIRTest {
 
         listed(nfs4_prot.FATTR4_ACL, nfs4_prot.FATTR4_RDATTR_ERROR);
 
-        fattr4_rdattr_error rderror = new fattr4_rdattr_error(new Xdr(entries.attrs.attr_vals.value));
+        fattr4_rdattr_error rderror = new fattr4_rdattr_error(new Xdr(entries.attrs.attr_vals.value.toBytes()));
 
         assertTrue("rdattr_error is not set", entries.attrs.attrmask.isSet(nfs4_prot.FATTR4_RDATTR_ERROR));
         assertEquals("Invalid error code returned", nfsstat.NFSERR_MOVED, rderror.value);

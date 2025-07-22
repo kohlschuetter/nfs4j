@@ -74,7 +74,7 @@ public class FileHandleTest {
                 fh.toString());
         assertArrayEquals(BaseEncoding.base16().lowerCase().decode(
                 "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30"),
-                fh.toNfsHandle());
+                fh.toNfsHandle().toBytes());
     }
 
     @Test
@@ -87,6 +87,6 @@ public class FileHandleTest {
                 inode.toString());
         assertArrayEquals(BaseEncoding.base16().lowerCase().decode(
                 "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30"),
-                inode.toNfsHandle());
+                inode.toNfsHandle().toBytes());
     }
 }

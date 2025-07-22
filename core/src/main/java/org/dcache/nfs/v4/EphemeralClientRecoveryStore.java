@@ -19,21 +19,23 @@
  */
 package org.dcache.nfs.v4;
 
+import org.dcache.oncrpc4j.util.Opaque;
+
 /**
  * A {@link ClientRecoveryStore} that doesn't stores records.
  */
 public class EphemeralClientRecoveryStore implements ClientRecoveryStore {
 
     @Override
-    public void addClient(byte[] client) {
+    public void addClient(Opaque client) {
     }
 
     @Override
-    public void reclaimClient(byte[] client) {
+    public void reclaimClient(Opaque client) {
     }
 
     @Override
-    public void removeClient(byte[] client) {
+    public void removeClient(Opaque client) {
     }
 
     @Override
@@ -42,7 +44,7 @@ public class EphemeralClientRecoveryStore implements ClientRecoveryStore {
     }
 
     @Override
-    public void wantReclaim(byte[] client) {
+    public void wantReclaim(Opaque client) {
     }
 
     @Override

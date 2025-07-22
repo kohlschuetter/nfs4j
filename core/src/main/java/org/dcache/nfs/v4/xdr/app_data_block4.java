@@ -10,9 +10,11 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 
-import org.dcache.oncrpc4j.rpc.*;
-import org.dcache.oncrpc4j.rpc.net.*;
-import org.dcache.oncrpc4j.xdr.*;
+import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
+import org.dcache.oncrpc4j.xdr.XdrAble;
+import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
+import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class app_data_block4 implements XdrAble {
     public offset4 adb_offset;
@@ -21,7 +23,7 @@ public class app_data_block4 implements XdrAble {
     public length4 adb_reloff_blocknum;
     public count4 adb_block_num;
     public length4 adb_reloff_pattern;
-    public byte[] adb_pattern;
+    public Opaque adb_pattern;
 
     public app_data_block4() {
     }

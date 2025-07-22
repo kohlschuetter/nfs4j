@@ -63,6 +63,7 @@ import org.dcache.nfs.v4.NfsIdMapping;
 import org.dcache.nfs.v4.SimpleIdMap;
 import org.dcache.nfs.v4.xdr.nfsace4;
 import org.dcache.nfs.vfs.Stat.Type;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,7 +266,7 @@ public class DummyVFS implements VirtualFileSystem {
     }
 
     @Override
-    public DirectoryStream list(Inode inode, byte[] bytes, long l) throws IOException {
+    public DirectoryStream list(Inode inode, Opaque bytes, long l) throws IOException {
         long inodeNumber = toInodeNumber(inode);
         Path path = resolveInode(inodeNumber);
         final List<DirectoryEntry> list = new ArrayList<>();
@@ -284,7 +285,7 @@ public class DummyVFS implements VirtualFileSystem {
     }
 
     @Override
-    public byte[] directoryVerifier(Inode inode) throws IOException {
+    public Opaque directoryVerifier(Inode inode) throws IOException {
         return DirectoryStream.ZERO_VERIFIER;
     }
 
@@ -595,7 +596,7 @@ public class DummyVFS implements VirtualFileSystem {
     }
 
     @Override
-    public byte[] getXattr(Inode inode, String attr) throws IOException {
+    public Opaque getXattr(Inode inode, String attr) throws IOException {
         long inodeNumber = toInodeNumber(inode);
         Path path = resolveInode(inodeNumber);
 
@@ -603,17 +604,17 @@ public class DummyVFS implements VirtualFileSystem {
 
         ByteBuffer buf = ByteBuffer.allocate(view.size(attr));
         view.read(attr, buf);
-        return buf.array();
+        return Opaque.forImmutableByteBuffer(buf, 0, buf.position());
     }
 
     @Override
-    public void setXattr(Inode inode, String attr, byte[] value, SetXattrMode mode) throws IOException {
+    public void setXattr(Inode inode, String attr, Opaque value, SetXattrMode mode) throws IOException {
         long inodeNumber = toInodeNumber(inode);
         Path path = resolveInode(inodeNumber);
 
         UserDefinedFileAttributeView view = Files.getFileAttributeView(path, UserDefinedFileAttributeView.class);
 
-        ByteBuffer buf = ByteBuffer.wrap(value);
+        ByteBuffer buf = ByteBuffer.wrap(value.toBytes());
         view.write(attr, buf);
     }
 

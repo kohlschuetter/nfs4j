@@ -22,15 +22,16 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class ssv_seal_plain_tkn4 implements XdrAble {
-    public byte[] sspt_confounder;
+    public Opaque sspt_confounder;
     public uint32_t sspt_ssv_seq;
-    public byte[] sspt_orig_plain;
-    public byte[] sspt_pad;
+    public Opaque sspt_orig_plain;
+    public Opaque sspt_pad;
 
     public ssv_seal_plain_tkn4() {
     }

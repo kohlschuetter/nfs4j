@@ -22,6 +22,7 @@ package org.dcache.nfs.v4.xdr;
 import java.io.IOException;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -30,7 +31,7 @@ public class layoutreturn_file4 implements XdrAble {
     public offset4 lrf_offset;
     public length4 lrf_length;
     public stateid4 lrf_stateid;
-    public byte[] lrf_body;
+    public Opaque lrf_body;
 
     public layoutreturn_file4() {
     }

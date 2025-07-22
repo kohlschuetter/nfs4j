@@ -19,10 +19,10 @@
  */
 package org.dcache.nfs.v4.xdr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.dcache.nfs.v4.xdr.stateid4;
-import org.dcache.nfs.v4.xdr.uint32_t;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Test;
 
 public class stateid4Test {
@@ -32,11 +32,11 @@ public class stateid4Test {
 
         stateid4 stateidA = new stateid4();
         stateidA.seqid = 1;
-        stateidA.other = "state".getBytes();
+        stateidA.other = Opaque.forUtf8Bytes("state");
 
         stateid4 stateidB = new stateid4();
         stateidB.seqid = 1;
-        stateidB.other = "state".getBytes();
+        stateidB.other = Opaque.forUtf8Bytes("state");
 
         assertTrue("equal keys not equal", stateidA.equals(stateidB));
         assertTrue("equal, but different hashCode", stateidA.hashCode() == stateidB.hashCode());
@@ -48,7 +48,7 @@ public class stateid4Test {
 
         stateid4 stateidA = new stateid4();
         stateidA.seqid = 1;
-        stateidA.other = "state".getBytes();
+        stateidA.other = Opaque.forUtf8Bytes("state");
 
         assertTrue("equal keys not equal", stateidA.equals(stateidA));
     }
@@ -58,11 +58,11 @@ public class stateid4Test {
 
         stateid4 stateidA = new stateid4();
         stateidA.seqid = 1;
-        stateidA.other = "state".getBytes();
+        stateidA.other = Opaque.forUtf8Bytes("state");
 
         stateid4 stateidB = new stateid4();
         stateidB.seqid = 2;
-        stateidB.other = "state".getBytes();
+        stateidB.other = Opaque.forUtf8Bytes("state");
 
         assertTrue("differ by sequence should still be equal", stateidA.equals(stateidB));
         assertFalse("differ by sequence can't be equal", stateidA.equalsWithSeq(stateidB));
@@ -73,11 +73,11 @@ public class stateid4Test {
 
         stateid4 stateidA = new stateid4();
         stateidA.seqid = 1;
-        stateidA.other = "stateA".getBytes();
+        stateidA.other = Opaque.forUtf8Bytes("stateA");
 
         stateid4 stateidB = new stateid4();
         stateidB.seqid = 1;
-        stateidB.other = "stateB".getBytes();
+        stateidB.other = Opaque.forUtf8Bytes("stateB");
 
         assertFalse("differ by other not detected", stateidA.equals(stateidB));
     }

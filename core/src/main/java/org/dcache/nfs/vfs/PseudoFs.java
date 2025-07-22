@@ -86,6 +86,7 @@ import org.dcache.oncrpc4j.rpc.RpcAuthType;
 import org.dcache.oncrpc4j.rpc.RpcCall;
 import org.dcache.oncrpc4j.rpc.gss.RpcAuthGss;
 import org.dcache.oncrpc4j.rpc.gss.RpcGssService;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,7 +302,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     @Override
-    public DirectoryStream list(Inode inode, byte[] verifier, long cookie) throws IOException {
+    public DirectoryStream list(Inode inode, Opaque verifier, long cookie) throws IOException {
         Subject effectiveSubject = checkAccess(inode, ACE4_LIST_DIRECTORY);
         if (inode.isPseudoInode()) {
             return new DirectoryStream(listPseudoDirectory(inode)).tail(cookie);
@@ -473,13 +474,13 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     @Override
-    public byte[] getXattr(Inode inode, String attr) throws IOException {
+    public Opaque getXattr(Inode inode, String attr) throws IOException {
         checkAccess(inode, ACE4_READ_DATA);
         return _inner.getXattr(innerInode(inode), attr);
     }
 
     @Override
-    public void setXattr(Inode inode, String attr, byte[] value, SetXattrMode mode) throws IOException {
+    public void setXattr(Inode inode, String attr, Opaque value, SetXattrMode mode) throws IOException {
         checkAccess(inode, ACE4_WRITE_DATA);
         _inner.setXattr(innerInode(inode), attr, value, mode);
     }

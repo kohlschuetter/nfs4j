@@ -19,16 +19,17 @@
  */
 package org.dcache.nfs.v4.xdr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.dcache.nfs.v4.xdr.sessionid4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Test;
 
 public class sessionid4Test {
 
     @Test
     public void testEqualsTrue() {
-        byte[] id = "bla".getBytes();
+        Opaque id = Opaque.forUtf8Bytes("bla");
         sessionid4 session1 = new sessionid4(id);
         sessionid4 session2 = new sessionid4(id);
 
@@ -39,8 +40,8 @@ public class sessionid4Test {
 
     @Test
     public void testEqualsFalse() {
-        byte[] id1 = "bla".getBytes();
-        byte[] id2 = "blabla".getBytes();
+        Opaque id1 = Opaque.forUtf8Bytes("bla");
+        Opaque id2 = Opaque.forUtf8Bytes("blabla");
         sessionid4 session1 = new sessionid4(id1);
         sessionid4 session2 = new sessionid4(id2);
 

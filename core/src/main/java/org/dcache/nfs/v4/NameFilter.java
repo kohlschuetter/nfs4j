@@ -26,6 +26,7 @@ import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.status.BadNameException;
 import org.dcache.nfs.status.InvalException;
 import org.dcache.nfs.status.NameTooLongException;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.base.Utf8;
 
@@ -63,6 +64,10 @@ class NameFilter {
         }
 
         return name;
+    }
+
+    public static String convertName(Opaque bytes) throws ChimeraNFSException {
+        return convertName(bytes.toBytes()); // FIXME
     }
 
     /**

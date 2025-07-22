@@ -75,7 +75,7 @@ public class NfsV41FileLayoutDriver implements LayoutDriver {
 
             device_addr4 addr = new device_addr4();
             addr.da_layout_type = layouttype4.LAYOUT4_NFSV4_1_FILES.getValue();
-            addr.da_addr_body = xdr.getBytes();
+            addr.da_addr_body = xdr.toOpaque();
 
             return addr;
         } catch (IOException e) {
@@ -122,7 +122,7 @@ public class NfsV41FileLayoutDriver implements LayoutDriver {
 
             layout_content4 content = new layout_content4();
             content.loc_type = layouttype4.LAYOUT4_NFSV4_1_FILES.getValue();
-            content.loc_body = xdr.getBytes();
+            content.loc_body = xdr.toOpaque();
 
             return content;
 

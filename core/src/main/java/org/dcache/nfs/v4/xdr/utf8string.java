@@ -21,25 +21,25 @@ package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class utf8string implements XdrAble {
 
-    public byte[] value;
+    public Opaque value;
 
     public utf8string() {
     }
 
     public utf8string(String s) {
-        this.value = s.getBytes(StandardCharsets.UTF_8);
+        this.value = Opaque.forUtf8Bytes(s);
     }
 
-    public utf8string(byte[] value) {
+    public utf8string(Opaque value) {
         this.value = value;
     }
 
@@ -67,17 +67,17 @@ public class utf8string implements XdrAble {
             return false;
         }
 
-        return Arrays.equals(this.value, ((utf8string) obj).value);
+        return this.value.equals(((utf8string) obj).value);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(value);
+        return value.hashCode();
     }
 
     @Override
     public String toString() {
-        return new String(value, StandardCharsets.UTF_8);
+        return new String(value.toBytes(), StandardCharsets.UTF_8);
     }
 }
 // End of utf8string.java
