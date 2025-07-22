@@ -17,9 +17,10 @@
 package org.dcache.nfs.vfs;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
-
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Test;
 
 import com.google.common.io.BaseEncoding;
@@ -31,60 +32,43 @@ public class FileHandleTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyHandle() {
-        Inode.forNfsHandle(new byte[0]);
+        Inode.forNfsHandle(Opaque.EMPTY_OPAQUE);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBadVersion() {
         byte[] bytes = BaseEncoding.base16().lowerCase().decode(
                 "02caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30");
-        Inode.forNfsHandle(bytes);
+        Inode.forNfsHandle(Opaque.forImmutableBytes(bytes));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBadMagic() {
         byte[] bytes = BaseEncoding.base16().lowerCase().decode(
                 "0100000000000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30");
-        Inode.forNfsHandle(bytes);
+        Inode.forNfsHandle(Opaque.forImmutableBytes(bytes));
     }
 
     @Test
     public void testValidHandleV1() {
         byte[] bytes = BaseEncoding.base16().lowerCase().decode(
                 "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30");
-        FileHandle fh = new FileHandle(bytes);
+        Inode fh = new Inode(Opaque.forImmutableBytes(bytes));
 
-        assertEquals(1, fh.getVersion());
+        assertEquals(1, fh.handleVersion());
         assertEquals(0xCAFFEE, fh.getMagic());
         assertEquals(0, fh.getGeneration());
-        byte[] opaque = fh.getFsOpaque();
-        assertEquals("/export/data".hashCode(), fh.getExportIdx());
+        byte[] opaque = fh.getFileId();
+        assertEquals("/export/data".hashCode(), fh.exportIndex());
         assertEquals("0:INODE:0000C37233174392456EB83E44844E8D28D6:0", new String(opaque, US_ASCII));
     }
 
     @Test
-    public void testBuilder() {
-
-        FileHandle fh = new FileHandle.FileHandleBuilder()
-                .setExportIdx("/export/data".hashCode())
-                .build("0:INODE:0000C37233174392456EB83E44844E8D28D6:0".getBytes(US_ASCII));
-
-        assertEquals(
-                "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30",
-                fh.toString());
-        assertArrayEquals(BaseEncoding.base16().lowerCase().decode(
-                "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30"),
-                fh.toNfsHandle().toBytes());
-    }
-
-    @Test
     public void testFileHandleConstructor() {
-        Inode inode = new Inode(0, "/export/data".hashCode(), 0, "0:INODE:0000C37233174392456EB83E44844E8D28D6:0".getBytes(
-                US_ASCII));
+        Inode inode = new Inode(0, "/export/data".hashCode(), 0, "0:INODE:0000C37233174392456EB83E44844E8D28D6:0"
+                .getBytes(
+                        US_ASCII));
 
-        assertEquals(
-                "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30",
-                inode.toString());
         assertArrayEquals(BaseEncoding.base16().lowerCase().decode(
                 "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30"),
                 inode.toNfsHandle().toBytes());

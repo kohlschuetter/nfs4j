@@ -54,11 +54,6 @@ public class Inode {
 
     private final Opaque opaqueKey;
 
-    @Deprecated(forRemoval = true)
-    public Inode(FileHandle fh) {
-        this(fh.bytes());
-    }
-
     /**
      * This constructor will become marked {@code protected} in a future version.
      *
