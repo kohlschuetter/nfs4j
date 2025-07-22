@@ -596,17 +596,6 @@ public interface VirtualFileSystem extends OpenCloseTracker {
         return CompletableFuture.failedFuture(new NotSuppException());
     }
 
-    /**
-     * Converts an NFS file handle to an {@link Inode}.
-     * 
-     * @param bytes The NFS file handle.
-     * @return The {@link Inode}; must not be {@code null}.
-     * @throws IOException on error
-     */
-    default Inode inodeForNfsHandle(byte[] bytes) throws IOException {
-        return Inode.forNfsHandle(bytes);
-    }
-
     static final EnumSet<Stat.Flag> SUPPORTED_FLAGS_NONE = EnumSet.noneOf(Stat.Flag.class);
 
     default EnumSet<Stat.Flag> supportedFlags() {
