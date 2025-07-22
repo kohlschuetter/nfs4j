@@ -53,7 +53,7 @@ public class FileHandleTest {
     public void testValidHandleV1() {
         byte[] bytes = BaseEncoding.base16().lowerCase().decode(
                 "01caffee00000000ea15b996002e303a494e4f44453a3030303043333732333331373433393234353645423833453434383434453844323844363a30");
-        Inode fh = new Inode(Opaque.forImmutableBytes(bytes));
+        Inode fh = Inode.forNfsHandle(Opaque.forImmutableBytes(bytes));
 
         assertEquals(1, fh.handleVersion());
         assertEquals(0xCAFFEE, fh.getMagic());

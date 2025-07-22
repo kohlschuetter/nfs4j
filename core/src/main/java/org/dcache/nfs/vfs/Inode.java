@@ -74,7 +74,7 @@ public class Inode {
         this.nfsHandle = buildNfsHandle();
     }
 
-    public Inode(Opaque bytes) {
+    private Inode(Opaque bytes) {
         if (bytes.numBytes() < MIN_LEN) {
             throw new IllegalArgumentException("too short");
         }
