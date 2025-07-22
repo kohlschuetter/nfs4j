@@ -19,7 +19,7 @@
  */
 package org.dcache.nfs.v4.nlm;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  */

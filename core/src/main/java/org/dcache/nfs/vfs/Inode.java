@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.io.BaseEncoding;
 

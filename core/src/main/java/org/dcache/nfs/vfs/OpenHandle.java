@@ -1,6 +1,6 @@
 package org.dcache.nfs.vfs;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  * Describes metadata determined upon opening the resource at the NFS level.

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.util.concurrent.Striped;
 

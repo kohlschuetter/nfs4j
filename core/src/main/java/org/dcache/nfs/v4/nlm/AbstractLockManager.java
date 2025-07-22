@@ -26,8 +26,8 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.v4.xdr.nfs4_prot;
+import org.dcache.oncrpc4j.util.Opaque;
 
 /**
  * An abstract implementation of {@link LockManager} that handles lock conflict, lock merge and lock split, but lets its

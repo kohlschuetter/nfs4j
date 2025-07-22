@@ -45,13 +45,13 @@ import org.dcache.nfs.status.ExpiredException;
 import org.dcache.nfs.status.NoGraceException;
 import org.dcache.nfs.status.SeqMisorderedException;
 import org.dcache.nfs.status.StaleClientidException;
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.v4.xdr.seqid4;
 import org.dcache.nfs.v4.xdr.sessionid4;
 import org.dcache.nfs.v4.xdr.state_owner4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.v4.xdr.verifier4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

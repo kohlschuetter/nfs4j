@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.multimap.MultiMap;

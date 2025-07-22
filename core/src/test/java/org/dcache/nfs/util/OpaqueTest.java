@@ -7,6 +7,7 @@ import static org.junit.Assert.assertSame;
 
 import java.nio.ByteBuffer;
 
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.Test;
 
 public class OpaqueTest {

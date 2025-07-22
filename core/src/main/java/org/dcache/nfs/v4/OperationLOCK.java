@@ -24,7 +24,6 @@ import org.dcache.nfs.nfsstat;
 import org.dcache.nfs.status.InvalException;
 import org.dcache.nfs.status.OpenModeException;
 import org.dcache.nfs.status.ServerFaultException;
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.v4.nlm.LockDeniedException;
 import org.dcache.nfs.v4.nlm.LockException;
 import org.dcache.nfs.v4.nlm.LockManager;
@@ -41,6 +40,7 @@ import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.v4.xdr.offset4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

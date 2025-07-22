@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.Subject;
 
 import org.dcache.nfs.util.GuavaCacheMXBeanImpl;
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;

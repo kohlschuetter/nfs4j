@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.v4.StateOwner;
 import org.dcache.nfs.v4.nlm.LockException;
 import org.dcache.nfs.v4.nlm.LockManager;
@@ -13,6 +12,7 @@ import org.dcache.nfs.v4.nlm.SimpleLm;
 import org.dcache.nfs.v4.xdr.clientid4;
 import org.dcache.nfs.v4.xdr.nfs_lock_type4;
 import org.dcache.nfs.v4.xdr.state_owner4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.openjdk.jmh.annotations.*;
 
 @BenchmarkMode(Mode.Throughput)

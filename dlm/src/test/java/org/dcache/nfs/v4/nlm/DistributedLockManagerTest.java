@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.dcache.nfs.util.Opaque;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

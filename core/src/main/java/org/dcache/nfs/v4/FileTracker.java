@@ -39,13 +39,13 @@ import org.dcache.nfs.status.InvalException;
 import org.dcache.nfs.status.ShareDeniedException;
 import org.dcache.nfs.status.StaleException;
 import org.dcache.nfs.util.AdaptiveDelegationLogic;
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.v4.xdr.nfs4_prot;
 import org.dcache.nfs.v4.xdr.nfs_fh4;
 import org.dcache.nfs.v4.xdr.open_delegation_type4;
 import org.dcache.nfs.v4.xdr.stateid4;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.OpenCloseTracker;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.dcache.nfs.util.Opaque;
 import org.dcache.nfs.vfs.OpenHandle;
 import org.dcache.oncrpc4j.rpc.OncRpcException;
 import org.dcache.oncrpc4j.util.Bytes;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
