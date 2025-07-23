@@ -39,6 +39,7 @@ import org.dcache.nfs.vfs.DirectoryStream;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
 import org.dcache.nfs.vfs.VirtualFileSystem;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.Xdr;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class OperationREADDIRTest {
 
     @Before
     public void setup() throws Exception {
-        dirInode = new Inode(0, 0, 0, new byte[] {0, 0, 0, 0}); // the dir we want to read;
+        dirInode = Inode.forFileIdKey(0, 0, 0, Opaque.forImmutableBytes(new byte[] {0, 0, 0, 0})); // the dir we want to read;
         dirStat = new Stat(); // the stat marking it as a dir
         // noinspection OctalInteger
         dirStat.setMode(Stat.S_IFDIR | 0755);
@@ -176,7 +177,7 @@ public class OperationREADDIRTest {
 
         int cookie = ino++;
 
-        Inode inode = new Inode(0, 1, 0, Ints.toByteArray(cookie));;
+        Inode inode = Inode.forFileIdKey(0, 1, 0, Opaque.forImmutableBytes(Ints.toByteArray(cookie)));;
         Stat stat = new Stat(); // the stat marking it as a dir
         // noinspection OctalInteger
         stat.setMode(Stat.S_IFDIR | 0755);
@@ -203,7 +204,7 @@ public class OperationREADDIRTest {
 
         int cookie = ino++;
 
-        Inode inode = new Inode(0, 1, 0, Ints.toByteArray(cookie));
+        Inode inode = Inode.forFileIdKey(0, 1, 0, Opaque.forImmutableBytes(Ints.toByteArray(cookie)));
         Stat stat = new Stat(); // the stat marking it as a dir
         // noinspection OctalInteger
         stat.setMode(Stat.S_IFREG | 0644);

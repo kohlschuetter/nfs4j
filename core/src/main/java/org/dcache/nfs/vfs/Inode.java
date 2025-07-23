@@ -50,19 +50,6 @@ public class Inode {
     private final Opaque opaqueKey;
     private final Opaque nfsHandle;
 
-    /**
-     * This constructor will become marked {@code protected} in a future version.
-     *
-     * @param generation The handle generation (e.g., server boot time), or {@code 0} for permanent handles
-     * @param exportIdx The index into the export table
-     * @param type 1=pseudo FS
-     * @param fs_opaque FS specific opaque data (maximum 114 bytes)
-     */
-    @Deprecated
-    public Inode(int generation, int exportIdx, int type, byte[] fs_opaque) {
-        this(generation, exportIdx, type, Opaque.forBytes(fs_opaque));
-    }
-
     Inode(int generation, int exportIdx, int type, Opaque fileIdKey) {
         this.version = VERSION;
         this.magic = MAGIC;
@@ -126,6 +113,18 @@ public class Inode {
 
     public static Inode forFileIdKey(Opaque key) {
         return new Inode(0, 0, 0, key);
+    }
+
+    /**
+     * Returns an inode for the given fileId (with parameters).
+     *
+     * @param generation The handle generation (e.g., server boot time), or {@code 0} for permanent handles
+     * @param exportIdx The index into the export table
+     * @param type 1=pseudo FS
+     * @param fs_opaque FS specific opaque data (maximum 114 bytes)
+     */
+    public static Inode forFileIdKey(int generation, int exportIdx, int type, Opaque fs_opaque) {
+        return new Inode(generation, exportIdx, type, fs_opaque);
     }
 
     public static Inode innerInode(Inode outerInode) {
