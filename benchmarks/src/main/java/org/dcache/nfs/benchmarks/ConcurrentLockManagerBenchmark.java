@@ -52,7 +52,7 @@ public class ConcurrentLockManagerBenchmark {
         public FileHolder() {
             byte[] bytes = new byte[16];
             ThreadLocalRandom.current().nextBytes(bytes);
-            file1 = Opaque.forBytes(bytes);
+            file1 = Opaque.forImmutableBytes(bytes);
         }
 
         public Opaque getFile() {

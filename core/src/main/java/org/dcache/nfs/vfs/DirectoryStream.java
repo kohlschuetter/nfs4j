@@ -37,23 +37,13 @@ import com.google.common.collect.ForwardingNavigableSet;
 public class DirectoryStream implements Iterable<DirectoryEntry> {
 
     // v4 and v3 have the same verifier size
-    public final static Opaque ZERO_VERIFIER = Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
+    public final static Opaque ZERO_VERIFIER = Opaque.forImmutableBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]);
 
     private final Opaque verifier;
     private final NavigableSet<DirectoryEntry> entries;
 
     public DirectoryStream(Collection<DirectoryEntry> entries) {
         this(ZERO_VERIFIER, new TreeSet<>(entries));
-    }
-
-    @Deprecated
-    public DirectoryStream(byte[] verifier, Collection<DirectoryEntry> entries) {
-        this(verifier, new TreeSet<>(entries));
-    }
-
-    @Deprecated
-    public DirectoryStream(byte[] verifier, NavigableSet<DirectoryEntry> entries) {
-        this(Opaque.forBytes(verifier), entries);
     }
 
     public DirectoryStream(Opaque verifier, Collection<DirectoryEntry> entries) {

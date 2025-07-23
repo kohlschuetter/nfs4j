@@ -381,7 +381,8 @@ public class CompoundBuilder {
 
         op.opgetdevicelist.gdla_cookie = new nfs_cookie4(0);
 
-        op.opgetdevicelist.gdla_cookieverf = new verifier4(Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
+        op.opgetdevicelist.gdla_cookieverf = new verifier4(Opaque.forImmutableBytes(
+                new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
 
         op.opgetdevicelist.gdla_layout_type = layoutType.getValue();
         op.opgetdevicelist.gdla_maxdevices = new count4(256);
@@ -471,7 +472,7 @@ public class CompoundBuilder {
         attr.attrmask = bitmap4.of(nfs4_prot.FATTR4_SIZE, nfs4_prot.FATTR4_MODE);
 
         how.createattrs = attr;
-        how.createverf = new verifier4(Opaque.forBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
+        how.createverf = new verifier4(Opaque.forImmutableBytes(new byte[nfs4_prot.NFS4_VERIFIER_SIZE]));
         how.mode = createmode4.GUARDED4;
 
         flag.how = how;

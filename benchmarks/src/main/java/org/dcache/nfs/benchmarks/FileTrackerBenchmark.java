@@ -82,7 +82,7 @@ public class FileTrackerBenchmark {
         byte[] bootTime = new byte[8];
         ThreadLocalRandom.current().nextBytes(owner);
         Bytes.putLong(bootTime, 0, System.currentTimeMillis());
-        return stateHandler.createClient(address, address, minor, Opaque.forImmutableBytes(owner), new verifier4(Opaque.forBytes(bootTime)), null, false);
+        return stateHandler.createClient(address, address, minor, Opaque.forImmutableBytes(owner), new verifier4(Opaque.forImmutableBytes(bootTime)), null, false);
     }
 
     public static Inode generateFileHandle() {
