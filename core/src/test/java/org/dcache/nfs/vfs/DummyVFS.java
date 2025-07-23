@@ -604,7 +604,7 @@ public class DummyVFS implements VirtualFileSystem {
 
         ByteBuffer buf = ByteBuffer.allocate(view.size(attr));
         view.read(attr, buf);
-        return Opaque.forImmutableByteBuffer(buf, 0, buf.position());
+        return Opaque.forOwnedByteBuffer(buf, 0, buf.position());
     }
 
     @Override
