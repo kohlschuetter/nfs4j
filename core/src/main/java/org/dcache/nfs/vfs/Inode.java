@@ -79,10 +79,7 @@ public class Inode {
             throw new IllegalArgumentException("too short");
         }
 
-        ByteBuffer b = bytes.asByteBuffer(0, bytes.numBytes());
-        b.order(ByteOrder.BIG_ENDIAN);
-
-        int magic_version = b.getInt();
+        int magic_version = bytes.intAt(0);
         int geussVersion = (magic_version & 0xFF000000) >>> 24;
         if (geussVersion != VERSION) {
             throw new IllegalArgumentException("Unsupported version: " + geussVersion);
@@ -94,11 +91,11 @@ public class Inode {
             throw new IllegalArgumentException("Bad magic number");
         }
 
-        generation = b.getInt();
-        exportIdx = b.getInt();
-        type = (int) b.get();
-        int olen = (int) b.get();
-        this.opaqueKey = Opaque.forBytes(b, olen);
+        generation = bytes.intAt(4);
+        exportIdx = bytes.intAt(8);
+        type = bytes.byteAt(12);
+        int olen = bytes.byteAt(13);
+        this.opaqueKey = Opaque.forImmutableBytes(bytes.bytesAt(14, olen));
 
         this.nfsHandle = bytes;
     }
