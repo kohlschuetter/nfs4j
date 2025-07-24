@@ -862,8 +862,7 @@ public class Main {
         COMPOUND4res compound4res = sendCompoundInSession(args);
 
         int opss = compound4res.resarray.size();
-        byte[] data = new byte[compound4res.resarray.get(opss - 2).opread.resok4.data.remaining()];
-        compound4res.resarray.get(opss - 2).opread.resok4.data.get(data);
+        byte[] data = compound4res.resarray.get(opss - 2).opread.resok4.data.toBytes();
         System.out.println("[" + new String(data) + "]");
     }
 
@@ -1226,8 +1225,7 @@ public class Main {
                 .build();
         COMPOUND4res compound4res = sendCompoundInSession(args);
 
-        byte[] data = new byte[compound4res.resarray.get(2).opread.resok4.data.remaining()];
-        compound4res.resarray.get(2).opread.resok4.data.get(data);
+        byte[] data = compound4res.resarray.get(2).opread.resok4.data.toBytes();
         System.out.println("[" + new String(data) + "]");
 
     }
