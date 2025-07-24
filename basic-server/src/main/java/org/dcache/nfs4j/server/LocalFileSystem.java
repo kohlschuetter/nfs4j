@@ -467,7 +467,7 @@ public class LocalFileSystem implements VirtualFileSystem {
             throws IOException {
         Path path = resolveInode(inode);
         try (FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
-            int bytesWritten = channel.write(srcBuffer.asByteBuffer(0, srcBuffer.numBytes()), offset);
+            int bytesWritten = channel.write(srcBuffer.asByteBuffer(), offset);
             return new WriteResult(StabilityLevel.FILE_SYNC, bytesWritten);
         }
     }

@@ -65,7 +65,6 @@ public class Inode {
         if (bytes.numBytes() < MIN_LEN) {
             throw new IllegalArgumentException("too short");
         }
-
         int magic_version = bytes.intAt(0);
         int geussVersion = (magic_version & 0xFF000000) >>> 24;
         if (geussVersion != VERSION) {
@@ -82,7 +81,7 @@ public class Inode {
         exportIdx = bytes.intAt(8);
         type = bytes.byteAt(12);
         int olen = bytes.byteAt(13);
-        this.opaqueKey = Opaque.forImmutableBytes(bytes.bytesAt(14, olen));
+        this.opaqueKey = Opaque.forOwnedByteBuffer(bytes.asByteBuffer(), 14, olen);
 
         this.nfsHandle = bytes;
     }

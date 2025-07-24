@@ -86,7 +86,7 @@ public class DSOperationWRITE extends AbstractNFSv4Operation {
 
         long lastSize = out.size();
 
-        int bytesWritten = out.write(_args.opwrite.data.asByteBuffer(0, _args.opwrite.data.numBytes()), offset);
+        int bytesWritten = out.write(_args.opwrite.data.asByteBuffer(), offset);
 
         if (bytesWritten < 0) {
             throw new NfsIoException("IO not allowed");
