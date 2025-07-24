@@ -40,8 +40,20 @@ public class entry4 implements XdrAble {
         xdrDecode(xdr);
     }
 
+    private int numEntries(entry4 entry) {
+        int num = 0;
+        entry4 $this = this;
+        do {
+            $this = $this.nextentry;
+            num++;
+        } while ($this != null);
+        return num;
+    }
+
     public void xdrEncode(XdrEncodingStream xdr)
             throws OncRpcException, IOException {
+        xdr.ensureCapacity(numEntries(nextentry) * 256);
+
         entry4 $this = this;
         do {
             $this.cookie.xdrEncode(xdr);
