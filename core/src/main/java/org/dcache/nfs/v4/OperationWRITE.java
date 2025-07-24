@@ -53,7 +53,7 @@ public class OperationWRITE extends AbstractNFSv4Operation {
 
         final WRITE4res res = result.opwrite;
 
-        _args.opwrite.offset.checkOverflow(_args.opwrite.data.remaining(), "offset + length overflow");
+        _args.opwrite.offset.checkOverflow(_args.opwrite.data.numBytes(), "offset + length overflow");
 
         Stat.Type statType = context.getFs().getattr(context.currentInode(), Stat.STAT_ATTRIBUTES_TYPE_ONLY).type();
         stateid4 stateid = Stateids.getCurrentStateidIfNeeded(context, _args.opwrite.stateid);

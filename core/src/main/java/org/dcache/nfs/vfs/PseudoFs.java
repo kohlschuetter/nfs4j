@@ -361,9 +361,9 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     @Override
-    public int read(OpenHandle oh, Inode inode, ByteBuffer data, long offset, Runnable eofReached) throws IOException {
+    public Opaque read(OpenHandle oh, Inode inode, long offset, int toRead, Runnable eofReached) throws IOException {
         checkAccessReadWriteData(oh, inode, false);
-        return _inner.read(oh, innerInode(inode), data, offset, eofReached);
+        return _inner.read(oh, innerInode(inode), offset, toRead, eofReached);
     }
 
     @Override
@@ -408,14 +408,14 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     @Override
-    public WriteResult write(Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
+    public WriteResult write(Inode inode, Opaque data, long offset, StabilityLevel stabilityLevel)
             throws IOException {
         checkAccess(inode, ACE4_WRITE_DATA);
         return _inner.write(innerInode(inode), data, offset, stabilityLevel);
     }
 
     @Override
-    public WriteResult write(OpenHandle oh, Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
+    public WriteResult write(OpenHandle oh, Inode inode, Opaque data, long offset, StabilityLevel stabilityLevel)
             throws IOException {
         checkAccessReadWriteData(oh, inode, true);
         return _inner.write(oh, innerInode(inode), data, offset, stabilityLevel);

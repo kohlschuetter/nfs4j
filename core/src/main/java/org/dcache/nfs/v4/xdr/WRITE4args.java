@@ -20,9 +20,9 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
@@ -31,7 +31,7 @@ public class WRITE4args implements XdrAble {
     public stateid4 stateid;
     public offset4 offset;
     public int stable;
-    public ByteBuffer data;
+    public Opaque data;
 
     public WRITE4args() {
     }
@@ -46,7 +46,7 @@ public class WRITE4args implements XdrAble {
         stateid.xdrEncode(xdr);
         offset.xdrEncode(xdr);
         xdr.xdrEncodeInt(stable);
-        xdr.xdrEncodeByteBuffer(data);
+        xdr.xdrEncodeDynamicOpaque(data);
     }
 
     public void xdrDecode(XdrDecodingStream xdr)
@@ -54,7 +54,7 @@ public class WRITE4args implements XdrAble {
         stateid = new stateid4(xdr);
         offset = new offset4(xdr);
         stable = xdr.xdrDecodeInt();
-        data = xdr.xdrDecodeByteBuffer();
+        data = xdr.xdrDecodeDynamicOpaque();
     }
 
 }

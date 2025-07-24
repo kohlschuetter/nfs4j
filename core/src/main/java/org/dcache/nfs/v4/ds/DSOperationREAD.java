@@ -38,6 +38,7 @@ import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.vfs.FsCache;
 import org.dcache.nfs.vfs.Inode;
 import org.dcache.nfs.vfs.Stat;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public class DSOperationREAD extends AbstractNFSv4Operation {
         res.status = nfsstat.NFS_OK;
         res.resok4 = new READ4resok();
         bb.flip();
-        res.resok4.data = bb;
+        res.resok4.data = Opaque.forOwnedByteBuffer(bb, 0, bb.remaining());
 
         if (offset + bytesReaded == stat.getSize()) {
             eof = true;

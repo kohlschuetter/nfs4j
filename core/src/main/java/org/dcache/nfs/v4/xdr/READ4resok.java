@@ -20,16 +20,16 @@
 package org.dcache.nfs.v4.xdr;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.dcache.oncrpc4j.rpc.OncRpcException;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.dcache.oncrpc4j.xdr.XdrAble;
 import org.dcache.oncrpc4j.xdr.XdrDecodingStream;
 import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 
 public class READ4resok implements XdrAble {
     public boolean eof;
-    public ByteBuffer data;
+    public Opaque data;
 
     public READ4resok() {
     }
@@ -42,13 +42,13 @@ public class READ4resok implements XdrAble {
     public void xdrEncode(XdrEncodingStream xdr)
             throws OncRpcException, IOException {
         xdr.xdrEncodeBoolean(eof);
-        xdr.xdrEncodeByteBuffer(data);
+        xdr.xdrEncodeDynamicOpaque(data);
     }
 
     public void xdrDecode(XdrDecodingStream xdr)
             throws OncRpcException, IOException {
         eof = xdr.xdrDecodeBoolean();
-        data = xdr.xdrDecodeByteBuffer();
+        data = xdr.xdrDecodeDynamicOpaque();
     }
 
     public void setEOF() {

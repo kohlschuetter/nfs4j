@@ -228,15 +228,15 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * single additional client roundtrip at the end of the file.
      *
      * @param oh The open-handle, or {@code null}.
-     * @param inode inode of the file to read from.
      * @param data byte array for writing.
      * @param offset file's position to read from.
+     * @param toRead the maximum number of bytes to read.
      * @param eofReached a non-blocking callback to indicate that the end of the file was just reached (particularly,
      *            when a subsequent call would return {@code -1}).
-     * @return number of bytes read from the file, possibly zero. -1 if EOF is reached.
+     * @return The Opaque containing the read bytes, possibly zero.
      * @throws IOException
      */
-    default int read(OpenHandle oh, Inode inode, ByteBuffer data, long offset, Runnable eofReached) throws IOException {
+    default Opaque read(OpenHandle oh, Inode inode, long offset, int toRead, Runnable eofReached) throws IOException {
         Stat stat = getattr(inode);
 
         Stat.Type statType = stat.type();
@@ -246,11 +246,16 @@ public interface VirtualFileSystem extends OpenCloseTracker {
             throw new InvalException();
         }
 
-        int numRead = read(inode, data, offset);
-        if (numRead >= 0 && (offset + numRead) >= stat.getSize()) {
+        ByteBuffer buf = ByteBuffer.allocate(toRead);
+        int numRead = read(inode, buf, offset);
+
+        if (numRead < 0) {
+            eofReached.run();
+            return Opaque.EMPTY_OPAQUE;
+        } else if ((offset + numRead) >= stat.getSize()) {
             eofReached.run();
         }
-        return numRead;
+        return Opaque.forOwnedByteBuffer(buf, 0, numRead);
     }
 
     /**
@@ -311,11 +316,10 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @return write result.
      * @throws IOException
      */
-    default WriteResult write(Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
+    default WriteResult write(Inode inode, Opaque data, long offset, StabilityLevel stabilityLevel)
             throws IOException {
-        int count = data.remaining();
-        byte[] bytes = new byte[count];
-        data.get(bytes);
+        int count = data.numBytes();
+        byte[] bytes = data.toBytes();
         return write(inode, bytes, offset, count, stabilityLevel);
     }
 
@@ -330,7 +334,7 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @return write result.
      * @throws IOException
      */
-    default WriteResult write(OpenHandle oh, Inode inode, ByteBuffer data, long offset, StabilityLevel stabilityLevel)
+    default WriteResult write(OpenHandle oh, Inode inode, Opaque data, long offset, StabilityLevel stabilityLevel)
             throws IOException {
         return write(inode, data, offset, stabilityLevel);
     }

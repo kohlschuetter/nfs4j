@@ -463,11 +463,11 @@ public class LocalFileSystem implements VirtualFileSystem {
     }
 
     @Override
-    public WriteResult write(Inode inode, ByteBuffer srcBuffer, long offset, StabilityLevel stabilityLevel)
+    public WriteResult write(Inode inode, Opaque srcBuffer, long offset, StabilityLevel stabilityLevel)
             throws IOException {
         Path path = resolveInode(inode);
         try (FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
-            int bytesWritten = channel.write(srcBuffer, offset);
+            int bytesWritten = channel.write(srcBuffer.asByteBuffer(0, srcBuffer.numBytes()), offset);
             return new WriteResult(StabilityLevel.FILE_SYNC, bytesWritten);
         }
     }

@@ -20,7 +20,6 @@
 package org.dcache.nfs.v4;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.dcache.nfs.nfsstat;
 import org.dcache.nfs.status.OpenModeException;
@@ -31,6 +30,7 @@ import org.dcache.nfs.v4.xdr.nfs_argop4;
 import org.dcache.nfs.v4.xdr.nfs_opnum4;
 import org.dcache.nfs.v4.xdr.nfs_resop4;
 import org.dcache.nfs.v4.xdr.stateid4;
+import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,19 +70,14 @@ public class OperationREAD extends AbstractNFSv4Operation {
         long offset = _args.opread.offset.value;
         int count = _args.opread.count.value;
 
-        ByteBuffer buf = ByteBuffer.allocate(count);
-
         res.resok4 = new READ4resok();
-        int bytesRead = context.getFs().read(stateid, inode, buf, offset, res.resok4::setEOF);
+        Opaque bytesRead = context.getFs().read(stateid, inode, offset, count, res.resok4::setEOF);
 
-        if (bytesRead < 0) {
-            buf.clear();
+        if (bytesRead == null) {
             res.resok4.eof = true;
-        } else {
-            buf.flip();
         }
 
         res.status = nfsstat.NFS_OK;
-        res.resok4.data = buf;
+        res.resok4.data = bytesRead;
     }
 }

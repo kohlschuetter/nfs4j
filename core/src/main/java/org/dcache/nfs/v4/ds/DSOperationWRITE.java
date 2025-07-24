@@ -59,7 +59,7 @@ public class DSOperationWRITE extends AbstractNFSv4Operation {
 
         long offset = _args.opwrite.offset.value;
 
-        _args.opwrite.offset.checkOverflow(_args.opwrite.data.remaining(), "offset + length overflow");
+        _args.opwrite.offset.checkOverflow(_args.opwrite.data.numBytes(), "offset + length overflow");
 
         Inode inode = context.currentInode();
         Stat.Type statType = context.getFs().getattr(inode, Stat.STAT_ATTRIBUTES_TYPE_ONLY).type();
@@ -86,8 +86,7 @@ public class DSOperationWRITE extends AbstractNFSv4Operation {
 
         long lastSize = out.size();
 
-        _args.opwrite.data.rewind();
-        int bytesWritten = out.write(_args.opwrite.data, offset);
+        int bytesWritten = out.write(_args.opwrite.data.asByteBuffer(0, _args.opwrite.data.numBytes()), offset);
 
         if (bytesWritten < 0) {
             throw new NfsIoException("IO not allowed");

@@ -341,11 +341,11 @@ public class CompoundBuilder {
     }
 
     public CompoundBuilder withWrite(long offset, byte[] data, stateid4 stateid) {
-        ByteBuffer buf = ByteBuffer.wrap(data);
+        Opaque buf = Opaque.forBytes(data);
         return withWrite(offset, buf, stateid);
     }
 
-    public CompoundBuilder withWrite(long offset, ByteBuffer data, stateid4 stateid) {
+    public CompoundBuilder withWrite(long offset, Opaque data, stateid4 stateid) {
         WRITE4args args = new WRITE4args();
 
         args.stable = stable_how4.FILE_SYNC4;
