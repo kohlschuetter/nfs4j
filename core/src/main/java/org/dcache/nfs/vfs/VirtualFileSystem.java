@@ -231,8 +231,8 @@ public interface VirtualFileSystem extends OpenCloseTracker {
      * @param data byte array for writing.
      * @param offset file's position to read from.
      * @param toRead the maximum number of bytes to read.
-     * @param eofReached a non-blocking callback to indicate that the end of the file was just reached (particularly,
-     *            when a subsequent call would return {@code -1}).
+     * @param eofReached a non-blocking, idempotent callback to indicate that the end of the file was just reached, or
+     *            will be reached when the Opaque is returned. The callback may be called multiple times.
      * @return The Opaque containing the read bytes, possibly zero.
      * @throws IOException
      */
