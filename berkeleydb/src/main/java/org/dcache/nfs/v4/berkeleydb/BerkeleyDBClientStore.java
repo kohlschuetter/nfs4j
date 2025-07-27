@@ -17,7 +17,7 @@
  * details); if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.dcache.nfs.v4;
+package org.dcache.nfs.v4.berkeleydb;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import org.dcache.nfs.status.NoGraceException;
 import org.dcache.nfs.status.ReclaimBadException;
+import org.dcache.nfs.v4.ClientRecoveryStore;
 import org.dcache.oncrpc4j.util.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -103,10 +103,6 @@
             <groupId>com.kohlschutter.nfs4j</groupId>
             <artifactId>oncrpc4j-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sleepycat</groupId>
-            <artifactId>je</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

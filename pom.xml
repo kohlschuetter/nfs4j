@@ -38,6 +38,7 @@
   <modules>
       <module>core</module>
       <module>basic-client</module>
+      <module>berkeleydb</module>
       <module>spring</module>
       <module>dlm</module>
       <module>benchmarks</module>
@@ -202,11 +203,6 @@
               <groupId>com.hazelcast</groupId>
               <artifactId>hazelcast</artifactId>
               <version>5.3.5</version>
-          </dependency>
-          <dependency>
-              <groupId>com.sleepycat</groupId>
-              <artifactId>je</artifactId>
-              <version>7.3.7</version>
           </dependency>
           <dependency>
               <groupId>org.openjdk.jmh</groupId>

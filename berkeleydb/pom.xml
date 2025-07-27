@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>com.kohlschutter.nfs4j</groupId>
+      <artifactId>nfs4j</artifactId>
+      <version>0.28.0-SNAPSHOT</version>
+    </parent>
+
+    <name>BerkeleyDb (bdb) support</name>
+    <artifactId>nfs4j-berkeleydb</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.kohlschutter.nfs4j</groupId>
+            <artifactId>nfs4j-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+              <groupId>com.sleepycat</groupId>
+              <artifactId>je</artifactId>
+              <version>7.3.7</version>
+          </dependency>
+        <dependency>
+            <groupId>com.kohlschutter.nfs4j</groupId>
+            <artifactId>nfs4j-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+  <repositories>
+    <repository>
+      <id>maven2-repository.dcache.org</id>
+      <name>dCache.ORG Repository for Maven</name>
+      <url>https://download.dcache.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <id>dcache-snapshots</id>
+      <name>dCache.ORG snapshots repository</name>
+      <url>https://download.dcache.org/nexus/content/repositories/snapshots</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+</project>

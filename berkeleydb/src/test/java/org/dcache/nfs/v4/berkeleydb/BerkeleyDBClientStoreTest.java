@@ -1,4 +1,4 @@
-package org.dcache.nfs.v4;
+package org.dcache.nfs.v4.berkeleydb;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
