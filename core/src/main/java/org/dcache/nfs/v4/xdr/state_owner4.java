@@ -32,8 +32,8 @@ import org.dcache.oncrpc4j.xdr.XdrEncodingStream;
 import com.google.common.base.MoreObjects;
 
 public class state_owner4 implements XdrAble, Serializable {
+    private static final long serialVersionUID = -258946397720174517L;
 
-    private static final long serialVersionUID = -7146149387990285155L;
     public clientid4 clientid;
     public Opaque owner;
 
@@ -93,5 +93,18 @@ public class state_owner4 implements XdrAble, Serializable {
                 .add("ownerid", owner.toString())
                 .toString();
     }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        this.clientid = (clientid4) in.readObject();
+        this.owner = Opaque.forBytes((byte[]) in.readObject());
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        out.writeObject(clientid);
+        out.writeObject(owner.toBytes());
+    }
+
 }
 // End of state_owner4.java
