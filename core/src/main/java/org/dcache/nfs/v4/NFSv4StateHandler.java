@@ -321,7 +321,7 @@ public class NFSv4StateHandler {
         }
     }
 
-    public void updateClientLeaseTime(stateid4 stateid) throws ChimeraNFSException {
+    public NFS4Client updateClientLeaseTime(stateid4 stateid) throws ChimeraNFSException {
 
         checkState(_running, "NFS state handler not running");
         NFS4Client client = getClientIdByStateId(stateid);
@@ -333,6 +333,8 @@ public class NFSv4StateHandler {
 
         Stateids.checkStateId(state.stateid(), stateid);
         client.updateLeaseTime();
+
+        return client;
     }
 
     public List<NFS4Client> getClients() {

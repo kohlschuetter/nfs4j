@@ -48,18 +48,12 @@ public class OperationREAD extends AbstractNFSv4Operation {
 
         stateid4 stateid = Stateids.getCurrentStateidIfNeeded(context, _args.opread.stateid);
 
-        NFS4Client client;
-        if (context.getMinorversion() == 0) {
-            /*
-             * The NFSv4.0 spec requires lease renewal on READ. See: https://tools.ietf.org/html/rfc7530#page-119
-             *
-             * With introduction of sessions in v4.1 update of the lease time done through SEQUENCE operations.
-             */
-            context.getStateHandler().updateClientLeaseTime(stateid);
-            client = context.getStateHandler().getClientIdByStateId(stateid);
-        } else {
-            client = context.getSession().getClient();
-        }
+        /*
+         * The NFSv4.0 spec requires lease renewal on READ. See: https://tools.ietf.org/html/rfc7530#page-119
+         *
+         * With introduction of sessions in v4.1 update of the lease time done through SEQUENCE operations.
+         */
+        NFS4Client client = context.getClient(stateid, true);
 
         var inode = context.currentInode();
         int shareAccess = context.getStateHandler().getFileTracker().getShareAccess(client, inode, stateid);

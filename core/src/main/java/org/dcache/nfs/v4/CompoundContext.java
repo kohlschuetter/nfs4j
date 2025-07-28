@@ -19,8 +19,6 @@
  */
 package org.dcache.nfs.v4;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.net.InetSocketAddress;
 import java.security.Principal;
 import java.util.List;
@@ -52,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.security.auth.UnixNumericUserPrincipal;
 
-public class CompoundContext {
+public final class CompoundContext {
 
     private static final Logger _log = LoggerFactory.getLogger(CompoundContext.class);
 
@@ -371,5 +369,17 @@ public class CompoundContext {
      */
     public nfs_impl_id4 getImplementationId() {
         return _implId;
+    }
+
+    public NFS4Client getClient(stateid4 stateid, boolean updateClientLeaseTime) throws ChimeraNFSException {
+        if (getMinorversion() == 0) {
+            if (updateClientLeaseTime) {
+                return _stateHandler.updateClientLeaseTime(stateid);
+            } else {
+                return _stateHandler.getClientIdByStateId(stateid);
+            }
+        } else {
+            return _session.getClient();
+        }
     }
 }

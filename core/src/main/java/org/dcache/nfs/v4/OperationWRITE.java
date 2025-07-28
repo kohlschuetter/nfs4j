@@ -66,18 +66,12 @@ public class OperationWRITE extends AbstractNFSv4Operation {
             throw new InvalException("path is a symlink");
         }
 
-        NFS4Client client;
-        if (context.getMinorversion() == 0) {
-            /*
-             * The NFSv4.0 spec requires lease renewal on WRITE. See: https://tools.ietf.org/html/rfc7530#page-119
-             *
-             * With introduction of sessions in v4.1 update of the lease time done through SEQUENCE operations.
-             */
-            context.getStateHandler().updateClientLeaseTime(stateid);
-            client = context.getStateHandler().getClientIdByStateId(stateid);
-        } else {
-            client = context.getSession().getClient();
-        }
+        /*
+         * The NFSv4.0 spec requires lease renewal on WRITE. See: https://tools.ietf.org/html/rfc7530#page-119
+         *
+         * With introduction of sessions in v4.1 update of the lease time done through SEQUENCE operations.
+         */
+        NFS4Client client = context.getClient(stateid, true);
 
         var inode = context.currentInode();
 
