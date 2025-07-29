@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 import org.dcache.nfs.nfsstat;
 import org.dcache.nfs.v4.xdr.CB_COMPOUND4args;
 import org.dcache.nfs.v4.xdr.CB_COMPOUND4res;
+import org.dcache.nfs.v4.xdr.CB_GETATTR4args;
 import org.dcache.nfs.v4.xdr.CB_LAYOUTRECALL4args;
 import org.dcache.nfs.v4.xdr.CB_NOTIFY_DEVICEID4args;
 import org.dcache.nfs.v4.xdr.CB_OFFLOAD4args;
@@ -114,28 +115,33 @@ public class ClientCB {
      */
     ClientCB(RpcTransport transport, int program, int minorVersion, sessionid4 session, int maxrequests,
             callback_sec_parms4[] sec_parms) {
+        this(transport, program, minorVersion, session, maxrequests, toRpcAuth(sec_parms));
+    }
+
+    ClientCB(RpcTransport transport, int program, int minorVersion, sessionid4 session, int maxrequests,
+            RpcAuth auth) {
         _minorVersion = minorVersion;
         _session = session;
+        _auth = auth;
+        _highestSlotId = maxrequests - 1;
+        _clientSession = new ClientSession(session, maxrequests);
+        _rpc = new RpcCall(program, CB_VERSION, _auth, transport);
+    }
 
+    private static RpcAuth toRpcAuth(callback_sec_parms4[] sec_parms) {
         switch (sec_parms[0].cb_secflavor) {
             case RpcAuthType.NONE:
-                _auth = new RpcAuthTypeNone();
-                break;
+                return new RpcAuthTypeNone();
             case RpcAuthType.UNIX:
-                _auth = new RpcAuthTypeUnix(
+                return new RpcAuthTypeUnix(
                         sec_parms[0].cbsp_sys_cred.uid,
                         sec_parms[0].cbsp_sys_cred.gid,
                         sec_parms[0].cbsp_sys_cred.gids,
                         sec_parms[0].cbsp_sys_cred.stamp,
                         sec_parms[0].cbsp_sys_cred.machinename);
-                break;
             default:
                 throw new IllegalArgumentException("Unsuppotred security flavor");
         }
-
-        _highestSlotId = maxrequests - 1;
-        _clientSession = new ClientSession(session, maxrequests);
-        _rpc = new RpcCall(program, CB_VERSION, _auth, transport);
     }
 
     @Override
@@ -171,6 +177,34 @@ public class ClientCB {
         cbCompound.tag = new utf8str_cs(tag);
 
         return cbCompound;
+    }
+
+    public void cbGetAttr(uint32_t callback_ident, nfs_fh4 fh, bitmap4 attr_request) throws OncRpcException,
+            IOException, TimeoutException {
+        CB_GETATTR4args cbGetAttr = new CB_GETATTR4args();
+        cbGetAttr.attr_request = attr_request;
+        cbGetAttr.fh = fh;
+
+        nfs_cb_argop4 opArgs = new nfs_cb_argop4();
+        opArgs.argop = nfs_cb_opnum4.OP_CB_GETATTR;
+        opArgs.opcbgetattr = cbGetAttr;
+
+        CB_COMPOUND4args args = new CB_COMPOUND4args();
+        args.minorversion = new uint32_t(0);
+        args.callback_ident = callback_ident;
+        args.tag = new utf8str_cs("cb_getattr4");
+        args.argarray = new nfs_cb_argop4[] {
+                opArgs
+        };
+
+        var slot = _clientSession.acquireSlot();
+        try {
+            CB_COMPOUND4res res = new CB_COMPOUND4res();
+            _rpc.call(nfs4_prot.CB_COMPOUND_1, args, res, 1, TimeUnit.SECONDS, null);
+            nfsstat.throwIfNeeded(res.status);
+        } finally {
+            _clientSession.releaseSlot(slot);
+        }
     }
 
     public void cbLayoutRecallFsid() throws OncRpcException, IOException {
