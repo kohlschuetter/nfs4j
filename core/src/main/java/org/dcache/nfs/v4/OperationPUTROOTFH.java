@@ -43,6 +43,8 @@ public class OperationPUTROOTFH extends AbstractNFSv4Operation {
 
         final PUTROOTFH4res res = result.opputrootfh;
 
+        context.failOnIncompleteConnectionAuthHandshake();
+
         context.currentInode(context.getFs().getRootInode());
         context.currentStateid(Stateids.ZeroStateId());
         res.status = nfsstat.NFS_OK;

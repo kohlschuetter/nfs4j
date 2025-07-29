@@ -29,6 +29,7 @@ import javax.security.auth.kerberos.KerberosPrincipal;
 
 import org.dcache.nfs.ChimeraNFSException;
 import org.dcache.nfs.ExportTable;
+import org.dcache.nfs.status.AccessException;
 import org.dcache.nfs.status.BadStateidException;
 import org.dcache.nfs.status.NoFileHandleException;
 import org.dcache.nfs.status.RestoreFhException;
@@ -100,6 +101,7 @@ public final class CompoundContext {
     private final verifier4 _rebootVerifier;
 
     private final nfs_impl_id4 _implId;
+    private final ConnectionAuthenticator _connectionAuthenticator;
 
     /**
      * Create context of COUMPOUND request.
@@ -121,6 +123,7 @@ public final class CompoundContext {
         _rebootVerifier = builder.getRebootVerifier();
         _implId = builder.getImplementationId();
         _session = builder.getSession();
+        _connectionAuthenticator = builder.connectionAuthenticator;
     }
 
     public RpcCall getRpcCall() {
@@ -393,6 +396,21 @@ public final class CompoundContext {
             }
         } else {
             return _session.getClient();
+        }
+    }
+
+    public ConnectionAuthenticator getConnectionAuthenticator() {
+        return _connectionAuthenticator;
+    }
+
+    void failOnIncompleteConnectionAuthHandshake() throws AccessException {
+        if (_connectionAuthenticator == null) {
+            return;
+        }
+        InetSocketAddress sockAddr = getRpcCall().getTransport().getRemoteSocketAddress();
+        if (_connectionAuthenticator
+                .requiresConnectionAuthentication(sockAddr)) {
+            throw new AccessException("incomplete handshake");
         }
     }
 }

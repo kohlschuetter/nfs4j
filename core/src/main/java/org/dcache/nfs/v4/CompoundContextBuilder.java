@@ -41,6 +41,7 @@ public class CompoundContextBuilder {
     private int exchangeIdFlags = nfs4_prot.EXCHGID4_FLAG_USE_NON_PNFS;
     private verifier4 rebootVerifier;
     private NFSv41Session session;
+    ConnectionAuthenticator connectionAuthenticator = ConnectionAuthenticator.DUMMY_AUTHENTICATOR;
 
     private nfs_impl_id4 implId;
 
@@ -81,6 +82,11 @@ public class CompoundContextBuilder {
 
     public CompoundContextBuilder withImplementationId(nfs_impl_id4 impId) {
         this.implId = impId;
+        return this;
+    }
+
+    public CompoundContextBuilder withConnectionAuthenticator(ConnectionAuthenticator ca) {
+        this.connectionAuthenticator = ca == null ? ConnectionAuthenticator.DUMMY_AUTHENTICATOR : ca;
         return this;
     }
 

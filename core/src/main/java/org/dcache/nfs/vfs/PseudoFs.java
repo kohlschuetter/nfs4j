@@ -74,6 +74,7 @@ import org.dcache.nfs.status.PermException;
 import org.dcache.nfs.status.RoFsException;
 import org.dcache.nfs.util.SubjectHolder;
 import org.dcache.nfs.v4.CompoundContext;
+import org.dcache.nfs.v4.ConnectionAuthenticator;
 import org.dcache.nfs.v4.NFS4Client;
 import org.dcache.nfs.v4.NFSv4StateHandler;
 import org.dcache.nfs.v4.acl.Acls;
@@ -518,6 +519,10 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Subject checkAccess(Inode inode, Stat stat, int requestedMask, boolean shouldLog) throws IOException {
+        ConnectionAuthenticator connAuth = getConnectionAuthenticator();
+        if (connAuth.requiresConnectionAuthentication(_inetAddress)) {
+            throw new AccessException("ConnectionAuthenticator");
+        }
 
         Subject effectiveSubject = _subject;
         Access aclMatched = Access.UNDEFINED;
@@ -854,5 +859,16 @@ public class PseudoFs extends ForwardingFileSystem {
 
     private CompoundContext getThreadLocalCompoundContext() {
         return tlContextSupplier.get();
+    }
+
+    private ConnectionAuthenticator getConnectionAuthenticator() {
+        ConnectionAuthenticator connAuth;
+        CompoundContext cc = getThreadLocalCompoundContext();
+        if (cc != null) {
+            connAuth = cc.getConnectionAuthenticator();
+        } else {
+            connAuth = ConnectionAuthenticator.DUMMY_AUTHENTICATOR;
+        }
+        return connAuth;
     }
 }

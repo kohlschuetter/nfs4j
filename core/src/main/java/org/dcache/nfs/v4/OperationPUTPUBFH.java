@@ -42,6 +42,8 @@ public class OperationPUTPUBFH extends AbstractNFSv4Operation {
     public void process(CompoundContext context, nfs_resop4 result) throws ChimeraNFSException, IOException {
         final PUTPUBFH4res res = result.opputpubfh;
 
+        context.failOnIncompleteConnectionAuthHandshake();
+
         context.currentInode(context.getFs().getRootInode());
         context.currentStateid(Stateids.ZeroStateId());
         res.status = nfsstat.NFS_OK;

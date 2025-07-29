@@ -56,6 +56,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
     private final NFSv4StateHandler _statHandler;
     private final LockManager _nlm;
     private final nfs_impl_id4 _implementationId;
+    private final ConnectionAuthenticator _connectionAuthenticator;
 
     /**
      * Verifier to indicate client that server is rebooted. Current currentTimeMillis is good enough, unless server
@@ -76,6 +77,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
         _implementationId.nii_domain = new utf8str_cis(builder.implementationDomain);
         _implementationId.nii_name = new utf8str_cs(builder.implementationName);
 
+        _connectionAuthenticator = builder.connectionAuthenticator;
     }
 
     @Deprecated
@@ -94,6 +96,8 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
         _implementationId.nii_date = new nfstime4(NFSv4Defaults.NFS4_IMPLEMENTATION_DATE);
         _implementationId.nii_domain = new utf8str_cis(NFSv4Defaults.NFS4_IMPLEMENTATION_DOMAIN);
         _implementationId.nii_name = new utf8str_cs(NFSv4Defaults.NFS4_IMPLEMENTATION_ID);
+
+        _connectionAuthenticator = ConnectionAuthenticator.DUMMY_AUTHENTICATOR;
     }
 
     @Override
@@ -145,6 +149,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
                     .withExportTable(_exportTable)
                     .withRebootVerifier(_rebootVerifier)
                     .withImplementationId(_implementationId)
+                    .withConnectionAuthenticator(_connectionAuthenticator)
                     .withCall(call$);
 
             if (_deviceManager != null) {
@@ -303,6 +308,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
         private String implementationName = NFSv4Defaults.NFS4_IMPLEMENTATION_ID;
         private String implementationDomain = NFSv4Defaults.NFS4_IMPLEMENTATION_DOMAIN;
         private Instant implementationDate = NFSv4Defaults.NFS4_IMPLEMENTATION_DATE;
+        private ConnectionAuthenticator connectionAuthenticator;
 
         public Builder withDeviceManager(NFSv41DeviceManager deviceManager) {
             this.deviceManager = deviceManager;
@@ -359,6 +365,11 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
 
         public NFSServerV41 build() {
             return new NFSServerV41(this);
+        }
+
+        public Builder withConnectionAuthenticator(ConnectionAuthenticator connAuth) {
+            this.connectionAuthenticator = connAuth;
+            return this;
         }
     }
 }
