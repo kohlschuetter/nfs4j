@@ -134,7 +134,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
             }
             res.resarray = new ArrayList<>(arg1.argarray.length);
 
-            VirtualFileSystem fs = new PseudoFs(_fs, call$, _exportTable, _statHandler);
+            VirtualFileSystem fs = new PseudoFs(_fs, call$, _exportTable, _statHandler, CompoundContext::getThreadLocalContext);
 
             CompoundContextBuilder builder = new CompoundContextBuilder()
                     .withMinorversion(arg1.minorversion.value)
@@ -158,6 +158,7 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
             }
 
             CompoundContext context = builder.build();
+            CompoundContext.setThreadLocalContext(context);
 
             boolean retransmit = false;
             for (int position = 0; position < arg1.argarray.length; position++) {
@@ -220,6 +221,8 @@ public class NFSServerV41 extends nfs4_prot_NFS4_PROGRAM_ServerStub {
             MDC.remove(NfsMdc.TAG);
             MDC.remove(NfsMdc.CLIENT);
             MDC.remove(NfsMdc.SESSION);
+
+            CompoundContext.removeThreadLocalContext();
         }
 
         return res;

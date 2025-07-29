@@ -53,6 +53,7 @@ import com.sun.security.auth.UnixNumericUserPrincipal;
 public final class CompoundContext {
 
     private static final Logger _log = LoggerFactory.getLogger(CompoundContext.class);
+    private static final ThreadLocal<CompoundContext> TL_CONTEXT = new ThreadLocal<>();
 
     private static final Principal NO_PRINCIPAL = new Principal() {
 
@@ -149,6 +150,18 @@ public final class CompoundContext {
      */
     public int getMinorversion() {
         return _minorversion;
+    }
+
+    static void setThreadLocalContext(CompoundContext context) {
+        TL_CONTEXT.set(context);
+    }
+
+    static void removeThreadLocalContext() {
+        TL_CONTEXT.remove();
+    }
+
+    static CompoundContext getThreadLocalContext() {
+        return TL_CONTEXT.get();
     }
 
     /**

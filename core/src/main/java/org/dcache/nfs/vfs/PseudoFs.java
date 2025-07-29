@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.security.auth.Subject;
 
@@ -72,6 +73,7 @@ import org.dcache.nfs.status.NoEntException;
 import org.dcache.nfs.status.PermException;
 import org.dcache.nfs.status.RoFsException;
 import org.dcache.nfs.util.SubjectHolder;
+import org.dcache.nfs.v4.CompoundContext;
 import org.dcache.nfs.v4.NFS4Client;
 import org.dcache.nfs.v4.NFSv4StateHandler;
 import org.dcache.nfs.v4.acl.Acls;
@@ -111,6 +113,7 @@ public class PseudoFs extends ForwardingFileSystem {
     private final ExportTable _exportTable;
     private final RpcAuth _auth;
     private final NFSv4StateHandler _stateHandler;
+    private final Supplier<CompoundContext> tlContextSupplier;
 
     private final static int ACCESS4_MASK =
             ACCESS4_DELETE | ACCESS4_EXECUTE | ACCESS4_EXTEND
@@ -118,11 +121,13 @@ public class PseudoFs extends ForwardingFileSystem {
                     | ACCESS4_XAREAD | ACCESS4_XAWRITE | ACCESS4_XALIST;
 
     public PseudoFs(VirtualFileSystem inner, RpcCall call, ExportTable exportTable) {
-        this(inner, call, exportTable, null);
+        this(inner, call, exportTable, null, () -> null);
     }
 
-    public PseudoFs(VirtualFileSystem inner, RpcCall call, ExportTable exportTable, NFSv4StateHandler stateHandler) {
+    public PseudoFs(VirtualFileSystem inner, RpcCall call, ExportTable exportTable, NFSv4StateHandler stateHandler,
+            Supplier<CompoundContext> tlContextSupplier) {
         _inner = inner;
+        this.tlContextSupplier = tlContextSupplier;
         _subject = call.getCredential().getSubject();
         _auth = call.getCredential();
         _inetAddress = call.getTransport().getRemoteSocketAddress();
@@ -845,5 +850,9 @@ public class PseudoFs extends ForwardingFileSystem {
             }
         }
         return Inode.innerInode(inode);
+    }
+
+    private CompoundContext getThreadLocalCompoundContext() {
+        return tlContextSupplier.get();
     }
 }
